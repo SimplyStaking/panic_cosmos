@@ -1,0 +1,13 @@
+.idea/
+__pycache__/
+
+logs/*.log
+logs/*/*.log
+!logs/alerts/.gitkeep
+!logs/general/.gitkeep
+
+config/user_config_main.ini
+config/user_config_nodes.ini
+config/user_config_repos.ini
+
+.coverage
