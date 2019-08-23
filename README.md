@@ -31,3 +31,7 @@ Simply VC runs highly reliable and secure infrastructure in our own datacentre i
 ### Further Reading
 
 If you wish to read more about monitoring and alerting on Cosmos, check out [our article on Medium](<https://medium.com/simply-vc/cosmos-monitoring-and-alerting-for-validators-8e3f016c9567>).
+
+---
+
+Official P.A.N.I.C. by Simply VC image adapted from [slidescarnival.com](https://www.slidescarnival.com/)
