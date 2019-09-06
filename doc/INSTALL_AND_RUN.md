@@ -26,7 +26,8 @@ The only major requirement to run P.A.N.I.C. is Python 3. However, to unlock the
 3. To install **pipenv** packaging tool, run `pip install pipenv`.
 
 **At the end, you should be able to:**
-1. Get the Python version by running `python --version`.
+1. Get the Python version by running `python --version`.  
+ (If multiple versions of Python are installed, the `python` executable may be `python3.6`, `python3.7`, etc.)
 2. Get the pip version by running `pip --version`.
 3. Get the pipenv version by running `pipenv --version`.
 
@@ -48,6 +49,7 @@ All of these steps are packaged into one setup process which is started up by ru
 ```bash
 pipenv update
 pipenv run python run_setup.py
+# If multiple versions of Python are installed, the python executable may be `python3.6`, `python3.7`, etc.
 ```
 
 Alternatively, you can take a look at the three `config/example_***.ini` files and perform the config file generation manually by copying the three example config files to the ones listed above and replacing the example pieces of information with actual ones.
@@ -77,6 +79,7 @@ After all of the setting-up, you will be glad to find out that running the alert
 ```bash
 pipenv update
 pipenv run python run_alerter.py
+# If multiple versions of Python are installed, the python executable may be `python3.6`, `python3.7`, etc.
 ```
 
 Assuming that the setup process was followed till the end, the above commands will start up all of the necessary node, network, and GitHub monitors. These will all start monitoring (and alerting) immediately.
@@ -108,7 +111,7 @@ The service file will now be created:
 sudo nano /etc/systemd/system/panic_alerter.service
 ```
 
-It should contain the following, replacing `<USER>` with the created user's name and the two `<ALERTER_DIR>` with the alerter's installation directory. This assumes that `pipenv` is found under `/usr/local/bin/pipenv`. We recommend that you run the command set for ExecStart manually to check that it works before starting the service.
+It should contain the following, replacing `<USER>` with the created user's name and the two `<ALERTER_DIR>` with the alerter's installation directory. This assumes that `pipenv` is found under `/usr/local/bin/pipenv` and that the Python executable is `python` (if multiple versions of Python are installed, the `python` executable may be `python3.6`, `python3.7`, etc.). We recommend that you run the command set for ExecStart manually to check that it works before starting the service.
 
 ```bash
 [Unit]
