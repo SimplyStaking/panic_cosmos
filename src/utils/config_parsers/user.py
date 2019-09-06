@@ -56,6 +56,8 @@ class UserConfig(ConfigParser):
         self.email_smtp = cp['email_alerts']['smtp']
         self.email_from = cp['email_alerts']['from']
         self.email_to = cp['email_alerts']['to']
+        self.email_user = cp['email_alerts']['user']
+        self.email_pass = cp['email_alerts']['pass']
 
         # [twilio_alerts]
         self.twilio_alerts_enabled = to_bool(cp['twilio_alerts']['enabled'])

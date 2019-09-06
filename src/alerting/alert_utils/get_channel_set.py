@@ -49,7 +49,8 @@ def get_full_channel_set(channel_name: str, logger_general: logging.Logger,
 
     # Add email alerts to channel set
     if user_conf.email_alerts_enabled:
-        email = EmailSender(user_conf.email_smtp, user_conf.email_from)
+        email = EmailSender(user_conf.email_smtp, user_conf.email_from,
+                            user_conf.email_user, user_conf.email_pass)
         email_channel = EmailChannel(channel_name, logger_general,
                                      redis, email, user_conf.email_to)
         channels.append(email_channel)
