@@ -139,8 +139,13 @@ def setup_email_alerts(cp: ConfigParser) -> None:
                          'receive email alerts:\n\t'
                          'example_recipient@email.com\n')
 
-        if yn_prompt('Do you wish to test email alerts now? (Y/n)\n'):
-            test = test_email_alerts(email_smtp, email_from, email_to)
+        while yn_prompt('Do you wish to add another email address? (Y/n)\n'):
+            email_to += ';' + input('Please insert the email address:\n')
+
+        if yn_prompt('Do you wish to test email alerts now? The first '
+                     'email address inserted will be used. (Y/n)\n'):
+            test = test_email_alerts(email_smtp, email_from,
+                                     email_to.split(';')[0])
             if test == TestOutcome.RestartSetup:
                 continue
             elif test == TestOutcome.SkipSetup:

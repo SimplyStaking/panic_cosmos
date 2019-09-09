@@ -55,7 +55,8 @@ class UserConfig(ConfigParser):
         self.email_alerts_enabled = to_bool(cp['email_alerts']['enabled'])
         self.email_smtp = cp['email_alerts']['smtp']
         self.email_from = cp['email_alerts']['from']
-        self.email_to = cp['email_alerts']['to']
+        self.email_to = cp['email_alerts']['to'].split(';')
+        # email_to is a semicolon-separated list of email addresses
 
         # [twilio_alerts]
         self.twilio_alerts_enabled = to_bool(cp['twilio_alerts']['enabled'])
@@ -63,7 +64,8 @@ class UserConfig(ConfigParser):
         self.twilio_auth_token = cp['twilio_alerts']['auth_token']
         self.twilio_phone_number = cp['twilio_alerts']['twilio_phone_number']
         self.twilio_dial_numbers = cp['twilio_alerts'][
-            'phone_numbers_to_dial'].split(';')  # comma-separated list of nos.
+            'phone_numbers_to_dial'].split(';')
+        # twilio_dial_numbers is a semicolon-separated list of phone numbers
 
         # [telegram_commands]
         self.telegram_cmds_enabled = to_bool(cp['telegram_commands']['enabled'])
