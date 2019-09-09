@@ -36,6 +36,10 @@ class Monitor:
     def redis_enabled(self) -> bool:
         return self._redis is not None
 
+    @property
+    def monitor_name(self) -> str:
+        return self._monitor_name
+
     def load_state(self) -> None:
         pass
 

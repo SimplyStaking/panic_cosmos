@@ -49,9 +49,9 @@ class NowAccessibleAlert(Alert):
 
 class CouldNotFindLiveFullNodeAlert(Alert):
 
-    def __init__(self) -> None:
-        super().__init__('Network monitor could not find a live '
-                         'full node to use as a data source.')
+    def __init__(self, network_monitor: str) -> None:
+        super().__init__('{} could not find a live full node to use as a '
+                         'data source.'.format(network_monitor))
 
 
 class MissedBlocksAlert(Alert):
