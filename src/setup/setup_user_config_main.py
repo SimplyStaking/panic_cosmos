@@ -148,9 +148,14 @@ def setup_email_alerts(cp: ConfigParser) -> None:
         email_to = input('Please specify the email address where you wish to '
                          'receive email alerts:\n\t'
                          'example_recipient@email.com\n')
+        
+        while yn_prompt('Do you wish to add another email address? (Y/n)\n'):
+            email_to += ';' + input('Please insert the email address:\n')
 
-        if yn_prompt('Do you wish to test email alerts now? (Y/n)\n'):
-            test = test_email_alerts(email_smtp, email_from, email_to,
+        if yn_prompt('Do you wish to test email alerts now? The first '
+                     'email address inserted will be used. (Y/n)\n'):
+            test = test_email_alerts(email_smtp, email_from,
+                                     email_to.split(';')[0],
                                      email_user, email_pass)
             if test == TestOutcome.RestartSetup:
                 continue
