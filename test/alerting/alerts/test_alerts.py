@@ -199,9 +199,10 @@ class TestAlerts(unittest.TestCase):
             str(PeersIncreasedOutsideDangerRangeAlert(node, danger)))
 
     def test_could_not_find_live_full_node_alert(self):
-        self.assertEqual('Network monitor could not find a live '
-                         'full node to use as a data source.',
-                         str(CouldNotFindLiveFullNodeAlert()))
+        net_monitor_name = 'cosmoshub-2 network monitor'
+        self.assertEqual('{} could not find a live full node to use as a '
+                         'data source.'.format(net_monitor_name),
+                         str(CouldNotFindLiveFullNodeAlert(net_monitor_name)))
 
     def test_error_when_reading_data_from_node(self):
         node = 'Node Name'

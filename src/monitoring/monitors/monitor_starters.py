@@ -60,7 +60,7 @@ def start_network_monitor(network_monitor: NetworkMonitor, monitor_period: int,
             logger.debug('Done reading network data.')
         except NoLiveFullNodeException:
             network_monitor.channels.alert_major(
-                CouldNotFindLiveFullNodeAlert())
+                CouldNotFindLiveFullNodeAlert(network_monitor.monitor_name))
         except (ConnectionError, ReadTimeout) as conn_err:
             network_monitor.last_full_node_used.set_as_down(
                 network_monitor.channels, conn_err, logger)
