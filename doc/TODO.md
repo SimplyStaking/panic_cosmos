@@ -13,7 +13,6 @@ We reiterate that any support from the community will be greatly appreciated. If
     - Add more data sources (prometheus, node exporter, LCD REST, ...)
     - Improve alert limiting, to prevent alert spam.
     - Reduced alert severity for nodes running on a testnet.
-    - Add option to set multiple recipient email addresses.
     - Add ability to switch on/off specific alerts and using different email/chat/number for different severity.
     - Have a list of outstanding alerts that can then be dismissed once acknowledged.
     
