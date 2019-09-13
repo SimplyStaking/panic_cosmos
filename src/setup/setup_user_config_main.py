@@ -144,11 +144,11 @@ def setup_email_alerts(cp: ConfigParser) -> None:
         email_from = input('Please specify the details of the sender in the '
                            'format shown below:\n\t'
                            'example_sender@email.com\n')
-        
+
         email_to = input('Please specify the email address where you wish to '
                          'receive email alerts:\n\t'
                          'example_recipient@email.com\n')
-        
+
         while yn_prompt('Do you wish to add another email address? (Y/n)\n'):
             email_to += ';' + input('Please insert the email address:\n')
 
