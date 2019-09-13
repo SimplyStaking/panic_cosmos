@@ -55,7 +55,6 @@ class UserConfig(ConfigParser):
         self.email_alerts_enabled = to_bool(cp['email_alerts']['enabled'])
         self.email_smtp = cp['email_alerts']['smtp']
         self.email_from = cp['email_alerts']['from']
-
         self.email_to = cp['email_alerts']['to'].split(';')
         # email_to is a semicolon-separated list of email addresses
         self.email_user = cp['email_alerts']['user']
