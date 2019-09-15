@@ -15,6 +15,7 @@ We reiterate that any support from the community will be greatly appreciated. If
     - Reduced alert severity for nodes running on a testnet.
     - Add ability to switch on/off specific alerts and using different email/chat/number for different severity.
     - Have a list of outstanding alerts that can then be dismissed once acknowledged.
+    - Alerts become less critical and should be toned down for testnet validators. 
     
 - Easier configuration and control
     - Use more of Telegram
