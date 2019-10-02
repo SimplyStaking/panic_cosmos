@@ -157,8 +157,6 @@ class Node:
                 channels.alert_major(CannotAccessNodeAlert(self.name))
             else:
                 channels.alert_minor(CannotAccessNodeAlert(self.name))
-            logger.error('Error occurred when accessing {}: {}.'
-                         ''.format(self, error))
             self._downtime_alert_limiter.did_task()
             self._initial_downtime_alert_sent = True
         elif self.is_down and self._downtime_alert_limiter.can_do_task():
