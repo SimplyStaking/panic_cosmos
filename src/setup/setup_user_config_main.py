@@ -123,6 +123,8 @@ def setup_email_alerts(cp: ConfigParser) -> None:
     cp['email_alerts']['smtp'] = ''
     cp['email_alerts']['from'] = ''
     cp['email_alerts']['to'] = ''
+    cp['email_alerts']['user'] = ''
+    cp['email_alerts']['pass'] = ''
 
     if not already_set_up and \
             not yn_prompt('Do you wish to set up email alerts? (Y/n)\n'):
@@ -130,6 +132,14 @@ def setup_email_alerts(cp: ConfigParser) -> None:
 
     while True:
         email_smtp = input('Please insert the SMTP server\'s address:\n')
+
+        email_user = input('Please insert the username for SMTP authentication '
+                           '(blank for no authentication):\n')
+        if len(email_user) != 0:
+            email_pass = input('Please insert the password for SMTP '
+                               'authentication:\n')
+        else:
+            email_pass = ''
 
         email_from = input('Please specify the details of the sender in the '
                            'format shown below:\n\t'
@@ -145,7 +155,8 @@ def setup_email_alerts(cp: ConfigParser) -> None:
         if yn_prompt('Do you wish to test email alerts now? The first '
                      'email address inserted will be used. (Y/n)\n'):
             test = test_email_alerts(email_smtp, email_from,
-                                     email_to.split(';')[0])
+                                     email_to.split(';')[0],
+                                     email_user, email_pass)
             if test == TestOutcome.RestartSetup:
                 continue
             elif test == TestOutcome.SkipSetup:
@@ -156,6 +167,8 @@ def setup_email_alerts(cp: ConfigParser) -> None:
     cp['email_alerts']['smtp'] = email_smtp
     cp['email_alerts']['from'] = email_from
     cp['email_alerts']['to'] = email_to
+    cp['email_alerts']['user'] = email_user
+    cp['email_alerts']['pass'] = email_pass
 
 
 def setup_twilio_alerts(cp: ConfigParser) -> None:

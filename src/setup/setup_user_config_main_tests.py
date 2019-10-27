@@ -35,9 +35,9 @@ def test_telegram_alerts(bot_api: TelegramBotApi) -> TestOutcome:
             return TestOutcome.SkipSetup
 
 
-def test_email_alerts(email_smtp: str, email_from: str, email_to: str) \
-        -> TestOutcome:
-    email_sender = EmailSender(email_smtp, email_from)
+def test_email_alerts(email_smtp: str, email_from: str, email_to: str,
+                      email_user: str, email_pass: str) -> TestOutcome:
+    email_sender = EmailSender(email_smtp, email_from, email_user, email_pass)
     try:
         email_sender.send_email('Test Alert', 'Test Alert', email_to)
         print('Test email sent.')
