@@ -1,13 +1,17 @@
 import smtplib
 from datetime import datetime
 from email.message import EmailMessage
+from typing import Optional
 
 
 class EmailSender:
 
-    def __init__(self, smtp: str, sender: str, username: str, password: str) \
-            -> None:
+    def __init__(self, smtp: str, sender: str, username: Optional[str],
+                 password: Optional[str]) -> None:
         super().__init__()
+
+        # If blank/None username or None password, EmailSender assumes
+        # that these are both blank and that no authentication is required
 
         self._smtp = smtp
         self._sender = sender
@@ -24,7 +28,9 @@ class EmailSender:
 
         # Send the message via the specified SMTP server.
         s = smtplib.SMTP(self._smtp)
-        if len(self._username) != 0:
+        if None not in [self._username, self._password] \
+                and len(self._username) != 0:
+            s.starttls()
             s.login(self._username, self._password)
         s.send_message(msg)
         s.quit()
