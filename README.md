@@ -20,8 +20,6 @@ We are sure that P.A.N.I.C. will be beneficial for node operators in the Cosmos 
 
 On top of the additional work that we will put in ourselves to improve and maintain the tool, any support from the community, both through development work or by delegating to the [Simply VC validator](https://simply-vc.com.mt/cosmos), will be greatly appreciated.
 
-[Click here](doc/TODO.md) for a list of pending features and improvements if you are interested in helping out or want to check out what's in the pipeline!
-
 ### Who We Are
 Simply VC runs highly reliable and secure infrastructure in our own datacentre in Malta, built with the aim of supporting the growth of the blockchain ecosystem. Read more about us on our website and Twitter:
 
