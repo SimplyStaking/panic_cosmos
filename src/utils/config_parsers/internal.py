@@ -36,7 +36,7 @@ class InternalConfig(ConfigParser):
         # [redis]
         section = cp['redis']
         self.redis_database = int(section['redis_database'])
-        self.redis_test_database = int(section['redis_rest_database'])
+        self.redis_test_database = int(section['redis_test_database'])
 
         self.redis_twilio_snooze_key = section['redis_twilio_snooze_key']
         self.redis_github_releases_key_prefix = section[
