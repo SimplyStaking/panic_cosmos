@@ -78,7 +78,6 @@ def setup_nodes(cp: ConfigParser) -> None:
             break
 
     # Add nodes to config
-    cp.clear()
     for i, node in enumerate(nodes):
         section = 'node_' + str(i)
         cp.add_section(section)
