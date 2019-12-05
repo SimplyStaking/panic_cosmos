@@ -181,15 +181,23 @@ Voting power change alerts are mostly info alerts; voting power increase is alwa
 
 ### Number of Peers
 
-Alerts for changes in the number of peers range from info to major. Any increase is positive and is thus an info alert. As for peer decrease alerts:
-- For validator nodes: any decrease to `N` peers inside a configurable danger boundary `D1` is a major alert (i.e. `N <= D1`). Otherwise, any other decrease is a minor alert.
-- For non-validator nodes: any decrease to `N` peers inside a configurable danger boundary `D2` is a minor alert (i.e. `N <= D2`). Otherwise, any other decreases raises no alert.
+Alerts for changes in the number of peers range from info to major.
+#### For Validator Nodes
+- Any decrease to `N` peers inside a configurable danger boundary `D1` is a major alert (i.e. `N <= D1`). 
+- Any decrease to `N` peers inside a configurable safe boundary `S1` is a minor alert (i.e. `D1 < N <= s1`).
+- Any decrease to `N` peers outside a configurable safe boundary `S1` raises no alerts (i.e. `N > S1`).
+- Any increase to `N` peers inside a configurable safe/danger boundary `S1`/`D1` raises an info alert (i.e. `N <= S1/D1`)
+- Any increase to `N` peers outside a configurable safe boundary `S1` raises no alerts (i.e. `N > S1`).
+#### For Non-Validator Nodes 
+- Any decrease to `N` peers inside a configurable danger boundary `D2` raises a minor alert (i.e. `N <= D2`). Otherwise, any other decreases raises no alert.
+- Any increase to `N` peers inside a configurable danger boundary `D2` raises an info alert (i.e. `N <= D2`). Otherwise, any other increase raises no alert.
 
 Non-validator nodes typically have much more peers where not each one of them is important. Thus, once `D2` is exceeded (`N > D2`), a special *'increased outside danger range'* info alert is issued and no further peer increase alerts are issued, to reduce alert spam.
 
 Default values:
 - `D1 = validator_peer_danger_boundary = 1`
-- `D2 = full_node_peer_danger_boundary = 15`
+- `D2 = full_node_peer_danger_boundary = 10`
+- `S1 = validator_peer_safe_boundary = 5`
 
 | Class | Severity | Configurable |
 |---|---|---|

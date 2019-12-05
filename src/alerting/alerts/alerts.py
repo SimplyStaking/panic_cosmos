@@ -132,6 +132,15 @@ class PeersIncreasedOutsideDangerRangeAlert(Alert):
             ''.format(node, danger, danger))
 
 
+class PeersIncreasedOutsideSafeRangeAlert(Alert):
+
+    def __init__(self, node: str, safe: int) -> None:
+        super().__init__(
+            '{} peers INCREASED to more than {} peers. No further peer change'
+            ' alerts will be sent unless the number of peers goes below {}.'
+            ''.format(node, safe, safe))
+
+
 class PeersDecreasedAlert(Alert):
 
     def __init__(self, node: str, old_peers: int, new_peers: int) -> None:

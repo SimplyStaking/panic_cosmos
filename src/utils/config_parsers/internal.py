@@ -1,4 +1,5 @@
 import configparser
+import sys
 from datetime import timedelta
 
 from src.utils.config_parsers.config_parser import ConfigParser
@@ -74,6 +75,9 @@ class InternalConfig(ConfigParser):
             section['max_missed_blocks_in_time_interval'])
         self.validator_peer_danger_boundary = int(
             section['validator_peer_danger_boundary'])
+        self.validator_peer_safe_boundary = int(
+            section['validator_peer_safe_boundary'])
+        self._check_if_peer_safe_and_danger_boundaries_are_valid()
         self.full_node_peer_danger_boundary = int(
             section['full_node_peer_danger_boundary'])
         self.missed_blocks_danger_boundary = int(
@@ -102,3 +106,17 @@ class InternalConfig(ConfigParser):
         self.tx_mintscan_link_prefix = section['tx_mintscan_link_prefix']
 
         self.github_releases_template = section['github_releases_template']
+
+    # Safe boundary must be greater than danger boundary at all times for
+    # correct execution
+    def _peer_safe_and_danger_boundaries_are_valid(self) -> bool:
+        return self.validator_peer_safe_boundary > \
+               self.validator_peer_danger_boundary > 0
+
+    def _check_if_peer_safe_and_danger_boundaries_are_valid(self):
+        while not self._peer_safe_and_danger_boundaries_are_valid():
+            print("validator_peer_safe_boundary must be STRICTLY GREATER than "
+                  "validator_peer_danger_boundary for correct execution. "
+                  "\nPlease do the necessary modifications in the "
+                  "config/internal_config.ini file and restart the alerter.")
+            sys.exit(-1)

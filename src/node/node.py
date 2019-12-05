@@ -11,7 +11,8 @@ from src.alerting.alerts.alerts import CannotAccessNodeAlert, \
     VotingPowerDecreasedAlert, VotingPowerIncreasedAlert, \
     VotingPowerIncreasedByAlert, VotingPowerDecreasedByAlert, \
     IsCatchingUpAlert, IsNoLongerCatchingUpAlert, PeersIncreasedAlert, \
-    PeersDecreasedAlert, PeersIncreasedOutsideDangerRangeAlert
+    PeersDecreasedAlert, PeersIncreasedOutsideDangerRangeAlert, \
+    PeersIncreasedOutsideSafeRangeAlert
 from src.alerting.channels.channel import ChannelSet
 from src.utils.config_parsers.internal import InternalConfig
 from src.utils.config_parsers.internal_parsed import InternalConf
@@ -49,6 +50,8 @@ class Node:
 
         self._validator_peer_danger_boundary = \
             internal_conf.validator_peer_danger_boundary
+        self._validator_peer_safe_boundary = \
+            internal_conf.validator_peer_safe_boundary
         self._full_node_peer_danger_boundary = \
             internal_conf.full_node_peer_danger_boundary
         self._missed_blocks_danger_boundary = \
@@ -310,21 +313,31 @@ class Node:
         # Variable alias for improved readability
         if self.is_validator:
             danger = self._validator_peer_danger_boundary
+            safe = self._validator_peer_safe_boundary
         else:
             danger = self._full_node_peer_danger_boundary
+            safe = None
 
         # Alert if number of peers has changed
         if self.no_of_peers not in [None, new_no_of_peers]:
             if self.is_validator:
-                if new_no_of_peers > self.no_of_peers:  # increase
-                    channels.alert_info(PeersIncreasedAlert(
-                        self.name, self.no_of_peers, new_no_of_peers))
-                elif new_no_of_peers > danger:  # decrease outside danger range
-                    channels.alert_minor(PeersDecreasedAlert(
-                        self.name, self.no_of_peers, new_no_of_peers))
-                else:  # decrease inside danger range
-                    channels.alert_major(PeersDecreasedAlert(
-                        self.name, self.no_of_peers, new_no_of_peers))
+                if new_no_of_peers <= self._validator_peer_safe_boundary:
+                    # beneath safe boundary
+                    if new_no_of_peers > self.no_of_peers:  # increase
+                        channels.alert_info(PeersIncreasedAlert(
+                            self.name, self.no_of_peers, new_no_of_peers))
+                    elif new_no_of_peers > danger:
+                        # decrease outside danger range
+                        channels.alert_minor(PeersDecreasedAlert(
+                            self.name, self.no_of_peers, new_no_of_peers))
+                    else:  # decrease inside danger range
+                        channels.alert_major(PeersDecreasedAlert(
+                            self.name, self.no_of_peers, new_no_of_peers))
+                elif self._no_of_peers <= self._validator_peer_safe_boundary \
+                        < new_no_of_peers:
+                    # increase outside safe range for the first time
+                    channels.alert_info(
+                        PeersIncreasedOutsideSafeRangeAlert(self.name, safe))
             else:
                 if new_no_of_peers > self.no_of_peers:  # increase
                     if new_no_of_peers < danger:  # increase inside danger range
