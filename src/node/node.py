@@ -293,12 +293,11 @@ class Node:
             '%s set_catching_up: before=%s, new=%s, channels=%s',
             self, self.catching_up, now_catching_up, channels)
 
-        # Alert if catching up has changed for validator
-        if self.is_validator:
-            if not self.catching_up and now_catching_up:
-                channels.alert_minor(IsCatchingUpAlert(self.name))
-            elif self.catching_up and not now_catching_up:
-                channels.alert_info(IsNoLongerCatchingUpAlert(self.name))
+        # Alert if catching up has changed
+        if not self.catching_up and now_catching_up:
+            channels.alert_minor(IsCatchingUpAlert(self.name))
+        elif self.catching_up and not now_catching_up:
+            channels.alert_info(IsNoLongerCatchingUpAlert(self.name))
 
         # Update catching-up
         self._catching_up = now_catching_up
@@ -340,7 +339,8 @@ class Node:
                         PeersIncreasedOutsideSafeRangeAlert(self.name, safe))
             else:
                 if new_no_of_peers > self.no_of_peers:  # increase
-                    if new_no_of_peers < danger:  # increase inside danger range
+                    if new_no_of_peers <= danger:
+                        # increase inside danger range
                         channels.alert_info(PeersIncreasedAlert(
                             self.name, self.no_of_peers, new_no_of_peers))
                     elif self.no_of_peers <= danger < new_no_of_peers:
