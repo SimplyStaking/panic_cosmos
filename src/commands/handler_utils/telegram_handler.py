@@ -1,8 +1,8 @@
 from typing import Optional, List
 
-from telegram import Bot, Update
+from telegram import Update
 from telegram.ext import Updater, CommandHandler, \
-    Handler
+    Handler, CallbackContext
 
 from src.alerting.alert_utils.telegram_bot_api import TelegramBotApi
 
@@ -15,7 +15,7 @@ class TelegramCommandHandler:
         self._authorised_chat_id = authorised_chat_id
 
         # Set up updater
-        self._updater = Updater(token=bot_token)
+        self._updater = Updater(token=bot_token, use_context=True)
 
         # Set up handlers
         ping_handler = CommandHandler('ping', self._ping_callback)
@@ -34,7 +34,7 @@ class TelegramCommandHandler:
         if not run_in_background:
             self._updater.idle(stop_signals=[])
 
-    def authorise(self, bot: Bot, update: Update) -> bool:
+    def authorise(self, update: Update, context: CallbackContext) -> bool:
         if self._authorised_chat_id in [None, str(update.message.chat_id)]:
             return True
         else:
@@ -43,11 +43,11 @@ class TelegramCommandHandler:
             api = TelegramBotApi(self._bot_token, self._authorised_chat_id)
             api.send_message(
                 'Received command from unrecognised user: '
-                'bot={}, update={}'.format(bot, update))
+                'update={}, context={}'.format(update, context))
             return False
 
-    def _ping_callback(self, bot: Bot, update: Update) -> None:
-        if self.authorise(bot, update):
+    def _ping_callback(self, update: Update, context: CallbackContext) -> None:
+        if self.authorise(update, context):
             update.message.reply_text('PONG!')
 
     def stop(self) -> None:
