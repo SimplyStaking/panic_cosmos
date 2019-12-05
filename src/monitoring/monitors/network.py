@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, timedelta
-from time import sleep
 from typing import List, Optional
 
 import dateutil
@@ -17,15 +16,20 @@ from src.utils.redis_api import RedisApi
 class NetworkMonitor(Monitor):
 
     def __init__(self, monitor_name: str, channels: ChannelSet,
-                 logger: logging.Logger, redis: Optional[RedisApi],
-                 all_full_nodes: List[Node], all_validators: List[Node]):
+                 logger: logging.Logger,
+                 network_monitor_max_catch_up_blocks: int,
+                 redis: Optional[RedisApi], all_full_nodes: List[Node],
+                 all_validators: List[Node]):
         super().__init__(monitor_name, channels, logger, redis)
 
+        self.network_monitor_max_catch_up_blocks = \
+            network_monitor_max_catch_up_blocks
         self._all_full_nodes = all_full_nodes
         self._all_validators = all_validators
 
         self.last_full_node_used = None
         self._last_height_checked = None
+        self._monitor_is_syncing = False
 
         self._redis_alive_key_timeout = \
             self._internal_conf.redis_network_monitor_alive_key_timeout
@@ -37,6 +41,9 @@ class NetworkMonitor(Monitor):
             self._monitor_name
 
         self.load_state()
+
+    def is_syncing(self) -> bool:
+        return self._monitor_is_syncing
 
     def load_state(self) -> None:
         # If Redis is enabled, load the last height checked, if any
@@ -75,6 +82,41 @@ class NetworkMonitor(Monitor):
                 return n
         raise NoLiveFullNodeException()
 
+    def _check_block(self, height: int) -> None:
+        self._logger.info('%s obtaining data at height %s',
+                          self._monitor_name, height)
+
+        # Get block
+        block = get_cosmos_json(self.node.rpc_url + '/block?height=' +
+                                str(height), self._logger)
+
+        # Get validators participating in the precommits of last commit
+        block_precommits = block['block']['last_commit']['precommits']
+        non_null_precommits = filter(lambda p: p, block_precommits)
+        block_precommits_validators = set(
+            map(lambda p: p['validator_address'], non_null_precommits))
+        total_no_of_missing_validators = \
+            len(block_precommits) - len(block_precommits_validators)
+
+        self._logger.debug('Precommit validators: %s',
+                           block_precommits_validators)
+        self._logger.debug('Total missing validators: %s',
+                           total_no_of_missing_validators)
+
+        # Call method based on whether block missed or not
+        for v in self._all_validators:
+            if v.pubkey not in block_precommits_validators:
+                block_time = block['block']['header']['time']
+                v.add_missed_block(
+                    height - 1,  # '- 1' since it's actually previous height
+                    dateutil.parser.parse(block_time, ignoretz=True),
+                    total_no_of_missing_validators, self.channels,
+                    self.logger)
+            else:
+                v.clear_missed_blocks(self.channels, self.logger)
+
+        self._logger.debug('Moving to next height.')
+
     def monitor(self) -> None:
         # Get abci_info and, from that, the last height to be checked
         abci_info = get_cosmos_json(self.node.rpc_url + '/abci_info',
@@ -87,47 +129,17 @@ class NetworkMonitor(Monitor):
 
         # Consider any height that is after the previous last height
         height = self._last_height_checked + 1
-        while height <= last_height_to_check:
-            self._logger.info('%s obtaining data at height %s',
-                              self._monitor_name, height)
+        if last_height_to_check - self._last_height_checked > \
+                self.network_monitor_max_catch_up_blocks:
+            height = last_height_to_check - \
+                     self.network_monitor_max_catch_up_blocks
+            self._check_block(height)
+            self._last_height_checked = height
+        elif height <= last_height_to_check:
+            self._check_block(height)
+            self._last_height_checked = height
 
-            # Get block
-            block = get_cosmos_json(self.node.rpc_url + '/block?height=' +
-                                    str(height), self._logger)
-
-            # Get validators participating in the precommits of last commit
-            block_precommits = block['block']['last_commit']['precommits']
-            non_null_precommits = filter(lambda p: p, block_precommits)
-            block_precommits_validators = set(
-                map(lambda p: p['validator_address'], non_null_precommits))
-            total_no_of_missing_validators = \
-                len(block_precommits) - len(block_precommits_validators)
-
-            self._logger.debug('Precommit validators: %s',
-                               block_precommits_validators)
-            self._logger.debug('Total missing validators: %s',
-                               total_no_of_missing_validators)
-
-            # Call method based on whether block missed or not
-            for v in self._all_validators:
-                if v.pubkey not in block_precommits_validators:
-                    block_time = block['block']['header']['time']
-                    v.add_missed_block(
-                        height - 1,  # '- 1' since it's actually previous height
-                        dateutil.parser.parse(block_time, ignoretz=True),
-                        total_no_of_missing_validators, self.channels,
-                        self.logger)
-                else:
-                    v.clear_missed_blocks(self.channels, self.logger)
-
-            self._logger.debug('Moving to next height.')
-
-            # Move to next block
-            height += 1
-
-            # If there is a next height to check, sleep for a bit
-            if height <= last_height_to_check:
-                self.logger.debug('Sleeping for 0.5 second between heights.')
-                sleep(0.5)
-
-        self._last_height_checked = last_height_to_check
+        if last_height_to_check - self._last_height_checked > 2:
+            self._monitor_is_syncing = True
+        else:
+            self._monitor_is_syncing = False

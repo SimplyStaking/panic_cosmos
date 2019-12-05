@@ -62,6 +62,8 @@ class InternalConfig(ConfigParser):
             section['node_monitor_period_seconds'])
         self.network_monitor_period_seconds = int(
             section['network_monitor_period_seconds'])
+        self.network_monitor_max_catch_up_blocks = int(
+            section['network_monitor_max_catch_up_blocks'])
         self.github_monitor_period_seconds = int(
             section['github_monitor_period_seconds'])
 

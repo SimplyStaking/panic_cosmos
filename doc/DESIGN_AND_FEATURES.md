@@ -69,16 +69,27 @@ The network monitor deals with a ***minimum* of one validator node and one (non-
 
 An important note is that the full node(s) should be a reliable data source in terms of availability. So much so that if there are no full nodes accessible, this is considered to be equivalent to the validator losing blocks and thus a `MAJOR` alert is raised.
 
+If the alerter is not in sync with the validator with respect to block height, the maximum number of historical blocks checked is `MCUB`, which is configurable from the internal config (`network_monitor_max_catch_up_blocks`).
+
 In each monitoring round, the network monitor:
 
 1. Gets the node's abci info from `[RPC_URL]/abci_info`
     1. Gets the latest block height *LastH*
-2. For each height *H* from the last block height checked until *LastH*:
+2. Sets *H* = *LastHChecked* + 1 where *LastHChecked is the height of the last block checked by the network monitor
+3. If *LastH* - *LastHChecked* > `MCUB`:
+    1. Sets *H* = *LastH* - `MCUB`
+    2. Gets the block at height *H* from `[RPC_URL]/block?height=H`
+    3. Checks whether our validator is in the list of participating validators
+    4. Increments or resets (depending on the outcome) the missed blocks counter for our validator
+4. Otherwise if *H* <= *LastHChecked* :
     1. Gets the block at height *H* from `[RPC_URL]/block?height=H`
     2. Checks whether our validator is in the list of participating validators
     3. Increments or resets (depending on the outcome) the missed blocks counter for our validator
-3. Saves its state and the nodes' state
-4. Sleeps until the next monitoring round
+5. Saves its state and the nodes' state
+6. Sleeps until the next monitoring round if it is not syncing (*LastH*-*LastHChecked* > 2).
+
+Default value:
+- `MCUB = network_monitor_max_catch_up_blocks = 500`
 
 ### GitHub Monitor
 
