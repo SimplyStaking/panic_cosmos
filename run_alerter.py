@@ -3,7 +3,10 @@ import sys
 from typing import List, Tuple
 
 from src.alerting.alert_utils.get_channel_set import get_full_channel_set
+from src.alerting.alert_utils.get_channel_set import \
+    get_periodic_alive_reminder_channel_set
 from src.alerting.alerts.alerts import TerminatedDueToExceptionAlert
+from src.alerting.periodic.periodic import periodic_alive_reminder
 from src.commands.handlers.telegram import TelegramCommands
 from src.monitoring.monitor_utils.get_json import get_cosmos_json, get_json
 from src.monitoring.monitors.github import GitHubMonitor
@@ -91,19 +94,21 @@ def run_monitor_nodes(node: Node):
         node.name, InternalConf.logging_level, rotating=True)
 
     # Initialise monitor
-    node_monitor = NodeMonitor(monitor_name, channel_set,
+    node_monitor = NodeMonitor(monitor_name, full_channel_set,
                                logger_monitor_node, REDIS, node)
 
-    # Start
-    log_and_print('{} started.'.format(monitor_name))
-    sys.stdout.flush()
-    try:
-        start_node_monitor(node_monitor,
-                           InternalConf.node_monitor_period_seconds,
-                           logger_monitor_node)
-    except Exception as e:
-        channel_set.alert_error(TerminatedDueToExceptionAlert(monitor_name, e))
-    log_and_print('{} stopped.'.format(monitor_name))
+    while True:
+        # Start
+        log_and_print('{} started.'.format(monitor_name))
+        sys.stdout.flush()
+        try:
+            start_node_monitor(node_monitor,
+                               InternalConf.node_monitor_period_seconds,
+                               logger_monitor_node)
+        except Exception as e:
+            full_channel_set.alert_error(
+                TerminatedDueToExceptionAlert(monitor_name, e))
+        log_and_print('{} stopped.'.format(monitor_name))
 
 
 def run_monitor_network(network_nodes_tuple: Tuple[str, List[Node]]):
@@ -132,25 +137,29 @@ def run_monitor_network(network_nodes_tuple: Tuple[str, List[Node]]):
             return
 
         # Initialise monitor
-        network_monitor = NetworkMonitor(monitor_name, channel_set,
-                                         logger_monitor_network, REDIS,
-                                         full_nodes, validators)
+        network_monitor = NetworkMonitor(monitor_name, full_channel_set,
+                                         logger_monitor_network,
+                                         InternalConf.
+                                         network_monitor_max_catch_up_blocks,
+                                         REDIS, full_nodes, validators)
     except Exception as e:
         msg = '!!! Error when initialising {}: {} !!!'.format(monitor_name, e)
         log_and_print(msg)
         raise InitialisationException(msg)
 
-    # Start
-    log_and_print('{} started with {} validator(s) and {} full node(s).'
-                  ''.format(monitor_name, len(validators), len(full_nodes)))
-    sys.stdout.flush()
-    try:
-        start_network_monitor(network_monitor,
-                              InternalConf.network_monitor_period_seconds,
-                              logger_monitor_network)
-    except Exception as e:
-        channel_set.alert_error(TerminatedDueToExceptionAlert(monitor_name, e))
-    log_and_print('{} stopped.'.format(monitor_name))
+    while True:
+        # Start
+        log_and_print('{} started with {} validator(s) and {} full node(s).'
+                      ''.format(monitor_name, len(validators), len(full_nodes)))
+        sys.stdout.flush()
+        try:
+            start_network_monitor(network_monitor,
+                                  InternalConf.network_monitor_period_seconds,
+                                  logger_monitor_network)
+        except Exception as e:
+            full_channel_set.alert_error(
+                TerminatedDueToExceptionAlert(monitor_name, e))
+        log_and_print('{} stopped.'.format(monitor_name))
 
 
 def run_commands_telegram():
@@ -161,21 +170,24 @@ def run_commands_telegram():
     if not UserConf.telegram_cmds_enabled:
         return
 
-    # Start
-    log_and_print('{} started.'.format(monitor_name))
-    sys.stdout.flush()
-    try:
-        TelegramCommands(
-            UserConf.telegram_cmds_bot_token,
-            UserConf.telegram_cmds_bot_chat_id,
-            logger_commands_telegram, REDIS,
-            InternalConf.redis_twilio_snooze_key,
-            InternalConf.redis_node_monitor_alive_key_prefix,
-            InternalConf.redis_network_monitor_alive_key_prefix
-        ).start_listening()
-    except Exception as e:
-        channel_set.alert_error(TerminatedDueToExceptionAlert(monitor_name, e))
-    log_and_print('{} stopped.'.format(monitor_name))
+    while True:
+        # Start
+        log_and_print('{} started.'.format(monitor_name))
+        sys.stdout.flush()
+        try:
+            TelegramCommands(
+                UserConf.telegram_cmds_bot_token,
+                UserConf.telegram_cmds_bot_chat_id,
+                logger_commands_telegram, REDIS,
+                InternalConf.redis_twilio_snooze_key,
+                InternalConf.redis_periodic_alive_reminder_mute_key,
+                InternalConf.redis_node_monitor_alive_key_prefix,
+                InternalConf.redis_network_monitor_alive_key_prefix
+            ).start_listening()
+        except Exception as e:
+            full_channel_set.alert_error(
+                TerminatedDueToExceptionAlert(monitor_name, e))
+        log_and_print('{} stopped.'.format(monitor_name))
 
 
 def run_monitor_github(repo_config: RepoConfig):
@@ -196,7 +208,7 @@ def run_monitor_github(repo_config: RepoConfig):
 
         # Initialise monitor
         github_monitor = GitHubMonitor(
-            monitor_name, channel_set, logger_monitor_github, REDIS,
+            monitor_name, full_channel_set, logger_monitor_github, REDIS,
             repo_config.repo_name, releases_page,
             InternalConf.redis_github_releases_key_prefix)
     except Exception as e:
@@ -204,16 +216,37 @@ def run_monitor_github(repo_config: RepoConfig):
         log_and_print(msg)
         raise InitialisationException(msg)
 
-    # Start
-    log_and_print('{} started.'.format(monitor_name))
-    sys.stdout.flush()
-    try:
-        start_github_monitor(github_monitor,
-                             InternalConf.github_monitor_period_seconds,
-                             logger_monitor_github)
-    except Exception as e:
-        channel_set.alert_error(TerminatedDueToExceptionAlert(monitor_name, e))
-    log_and_print('{} stopped.'.format(monitor_name))
+    while True:
+        # Start
+        log_and_print('{} started.'.format(monitor_name))
+        sys.stdout.flush()
+        try:
+            start_github_monitor(github_monitor,
+                                 InternalConf.github_monitor_period_seconds,
+                                 logger_monitor_github)
+        except Exception as e:
+            full_channel_set.alert_error(
+                TerminatedDueToExceptionAlert(monitor_name, e))
+        log_and_print('{} stopped.'.format(monitor_name))
+
+
+def run_periodic_alive_reminder():
+    if not UserConf.periodic_alive_reminder_enabled:
+        return
+
+    name = "Periodic alive reminder"
+
+    while True:
+        log_and_print('{} started.'.format(name))
+        try:
+            periodic_alive_reminder(
+                UserConf.interval_seconds,
+                periodic_alive_reminder_channel_set,
+                InternalConf.redis_periodic_alive_reminder_mute_key, REDIS)
+        except Exception as e:
+            periodic_alive_reminder_channel_set.alert_error(
+                TerminatedDueToExceptionAlert(name, e))
+        log_and_print('{} stopped.'.format(name))
 
 
 if __name__ == '__main__':
@@ -240,10 +273,16 @@ if __name__ == '__main__':
 
     # Alerters initialisation
     alerter_name = 'P.A.N.I.C.'
-    channel_set = get_full_channel_set(
+    full_channel_set = get_full_channel_set(
         alerter_name, logger_general, REDIS, log_file_alerts)
-    log_and_print('Enabled alerting channels: {}'.format(
-        channel_set.enabled_channels_list()))
+    log_and_print('Enabled alerting channels (general): {}'.format(
+        full_channel_set.enabled_channels_list()))
+    periodic_alive_reminder_channel_set = \
+        get_periodic_alive_reminder_channel_set(alerter_name, logger_general,
+                                                REDIS, log_file_alerts)
+    log_and_print('Enabled alerting channels (periodic alive reminder): {}'
+                  ''.format(periodic_alive_reminder_channel_set.
+                            enabled_channels_list()))
     sys.stdout.flush()
 
     # Nodes initialisation
@@ -280,11 +319,14 @@ if __name__ == '__main__':
     monitor_network_count = len(unique_networks)
     monitor_github_count = len(UserConf.filtered_repos)
     commands_telegram_count = 1
+    periodic_alive_reminder_count = 1
     total_count = sum([monitor_node_count, monitor_network_count,
-                       monitor_github_count, commands_telegram_count])
+                       monitor_github_count, commands_telegram_count,
+                       periodic_alive_reminder_count])
     with concurrent.futures.ThreadPoolExecutor(max_workers=total_count) \
             as executor:
         executor.map(run_monitor_nodes, node_monitor_nodes)
         executor.map(run_monitor_network, nodes_by_network.items())
         executor.map(run_monitor_github, UserConf.filtered_repos)
         executor.submit(run_commands_telegram)
+        executor.submit(run_periodic_alive_reminder)
