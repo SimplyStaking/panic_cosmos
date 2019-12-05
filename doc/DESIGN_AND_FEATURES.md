@@ -245,12 +245,9 @@ The only two alerts raised by the GitHub alerter are an info alert when a new re
 
 ### Periodic Alive Reminder
 
-If the periodic alive reminder is enabled from the config file, and P.A.N.I.C is running smoothly, the operator is informed every `P1` seconds that P.A.N.I.C is still running via an info alert.
+If the periodic alive reminder is enabled from the config file, and P.A.N.I.C is running smoothly, the operator is informed every time period that P.A.N.I.C is still running via an info alert.
 
 The periodic alive reminder always uses the console and logger to raise this alert, however, the operator can also receive this alert via Telegram, Email or both, by modifying the config file as described [here](./INSTALL_AND_RUN.md#setting-up-panic).
-
-Default value:
-- `P1 = interval_seconds = 3600`
 
 | Class | Severity | Configurable |
 |---|---|---|
