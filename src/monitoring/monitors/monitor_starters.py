@@ -25,12 +25,10 @@ def start_node_monitor(node_monitor: NodeMonitor, monitor_period: int,
             logger.debug('Reading %s.', node_monitor.node)
             node_monitor.monitor()
             logger.debug('Done reading %s.', node_monitor.node)
-        except ConnectionError as conn_err:
-            node_monitor.node.set_as_down(node_monitor.channels,
-                                          conn_err, logger)
-        except ReadTimeout as read_timeout:
-            node_monitor.node.set_as_down(node_monitor.channels,
-                                          read_timeout, logger)
+        except ConnectionError:
+            node_monitor.node.set_as_down(node_monitor.channels, logger)
+        except ReadTimeout:
+            node_monitor.node.set_as_down(node_monitor.channels, logger)
         except (urllib3.exceptions.IncompleteRead,
                 http.client.IncompleteRead) as incomplete_read:
             logger.error('Error when reading data from {}: {}. '
@@ -61,9 +59,9 @@ def start_network_monitor(network_monitor: NetworkMonitor, monitor_period: int,
         except NoLiveFullNodeException:
             network_monitor.channels.alert_major(
                 CouldNotFindLiveFullNodeAlert(network_monitor.monitor_name))
-        except (ConnectionError, ReadTimeout) as conn_err:
+        except (ConnectionError, ReadTimeout):
             network_monitor.last_full_node_used.set_as_down(
-                network_monitor.channels, conn_err, logger)
+                network_monitor.channels, logger)
         except (urllib3.exceptions.IncompleteRead,
                 http.client.IncompleteRead) as incomplete_read:
             network_monitor.channels.alert_error(ErrorWhenReadingDataFromNode(
@@ -78,8 +76,9 @@ def start_network_monitor(network_monitor: NetworkMonitor, monitor_period: int,
         network_monitor.save_state()
 
         # Sleep
-        logger.debug('Sleeping for %s seconds.', monitor_period)
-        time.sleep(monitor_period)
+        if not network_monitor.is_syncing():
+            logger.debug('Sleeping for %s seconds.', monitor_period)
+            time.sleep(monitor_period)
 
 
 def start_github_monitor(github_monitor: GitHubMonitor, monitor_period: int,

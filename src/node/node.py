@@ -145,8 +145,7 @@ class Node:
                 self._redis_prefix + '_no_of_peers': self._no_of_peers
             })
 
-    def set_as_down(self, channels: ChannelSet, error: Exception,
-                    logger: logging.Logger) -> None:
+    def set_as_down(self, channels: ChannelSet, logger: logging.Logger) -> None:
 
         logger.debug('%s set_as_down: is_down(currently)=%s, channels=%s',
                      self, self.is_down, channels)
