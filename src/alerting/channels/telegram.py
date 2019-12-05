@@ -2,8 +2,8 @@ import logging
 from typing import Optional
 
 from src.alerting.alert_utils.telegram_bot_api import TelegramBotApi
-from src.alerting.channels.channel import Channel, ChannelSet
 from src.alerting.alerts.alerts import Alert, ProblemWithTelegramBot
+from src.alerting.channels.channel import Channel, ChannelSet
 from src.utils.redis_api import RedisApi
 
 
