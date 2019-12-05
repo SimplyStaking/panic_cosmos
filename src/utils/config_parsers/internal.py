@@ -47,6 +47,8 @@ class InternalConfig(ConfigParser):
             'redis_network_monitor_alive_key_prefix']
         self.redis_network_monitor_last_height_key_prefix = section[
             'redis_network_monitor_last_height_key_prefix']
+        self.redis_periodic_alive_reminder_mute_key = \
+            section['redis_periodic_alive_reminder_mute_key']
 
         self.redis_node_monitor_alive_key_timeout = int(
             section['redis_node_monitor_alive_key_timeout'])

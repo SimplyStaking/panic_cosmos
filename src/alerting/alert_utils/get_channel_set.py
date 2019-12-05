@@ -124,3 +124,46 @@ def get_full_channel_set(channel_name: str, logger_general: logging.Logger,
         backup_channels_for_twilio.add_channel(telegram_channel)
 
     return ChannelSet(channels)
+
+
+def get_periodic_alive_reminder_channel_set(channel_name: str,
+                                            logger_general: logging.Logger,
+                                            redis: Optional[RedisApi],
+                                            alerts_log_file: str,
+                                            internal_conf:
+                                            InternalConfig = InternalConf,
+                                            user_conf: UserConfig = UserConf) \
+        -> ChannelSet:
+    # Initialise list of channels with default channels
+    channels = [
+        _get_console_channel(channel_name, logger_general),
+        _get_log_channel(alerts_log_file, channel_name, logger_general,
+                         internal_conf)
+    ]
+
+    # Initialise backup channel sets with default channels
+    backup_channels_for_telegram = ChannelSet(channels)
+
+    # Add telegram alerts to channel set if they are enabled from config file
+    if user_conf.telegram_alerts_enabled and \
+            user_conf.telegram_enabled:
+        telegram_channel = _get_telegram_channel(channel_name, logger_general,
+                                                 redis,
+                                                 backup_channels_for_telegram,
+                                                 user_conf)
+        channels.append(telegram_channel)
+
+    # Add email alerts to channel set if they are enabled from config file
+    if user_conf.email_alerts_enabled and \
+            user_conf.email_enabled:
+        email_channel = _get_email_channel(channel_name, logger_general,
+                                           redis, user_conf)
+        channels.append(email_channel)
+    else:
+        email_channel = None
+
+    # Set up email channel as backup channel for telegram and twilio
+    if email_channel is not None:
+        backup_channels_for_telegram.add_channel(email_channel)
+
+    return ChannelSet(channels)

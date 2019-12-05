@@ -6,6 +6,7 @@ This page will present the inner workings of the alerter as well as the features
 - **Alerting Channels**: (console, logging, Telegram, email, Twilio)
 - **Alert Types**: (major, minor, info, error)
 - **Monitor Types**: (node, network, GitHub)
+- **Periodic Alive Reminder**
 - **Telegram Commands**
 - **Redis**
 - **Complete List of Alerts**
@@ -89,6 +90,15 @@ In each monitoring round, the GitHub monitor:
     1. Gets and stores the number of releases
 2. Saves its state
 3. Sleeps until the next monitoring round
+
+## Periodic Alive Reminder
+
+The periodic alive reminder is a way for P.A.N.I.C to inform the operator that it is still running. This can be useful to the operator when no alerts have been sent for a long time, therefore it does not leave the operator wondering whether P.A.N.I.C is still running or not.
+
+The following are some important points about the periodic alive reminder:
+
+1. The time after which a reminder is sent can be specified by the operator using the setup process described [here](./INSTALL_AND_RUN.md).
+2. The periodic alive reminder can be muted and unmuted using Telegram as discussed below.
 
 ## Telegram Commands
 
@@ -213,6 +223,20 @@ The only two alerts raised by the GitHub alerter are an info alert when a new re
 |---|---|---|
 | `NewGitHubReleaseAlert` | `INFO` | ✗ |
 | `CannotAccessGitHubPageAlert` | `ERROR` | ✗ |
+
+### Periodic Alive Reminder
+
+If the periodic alive reminder is enabled from the config file, and P.A.N.I.C is running smoothly, the operator is informed every `P1` seconds that P.A.N.I.C is still running via an info alert.
+
+The periodic alive reminder always uses the console and logger to raise this alert, however, the operator can also receive this alert via Telegram, Email or both, by modifying the config file as described [here](./INSTALL_AND_RUN.md#setting-up-panic).
+
+Default value:
+- `P1 = interval_seconds = 3600`
+
+| Class | Severity | Configurable |
+|---|---|---|
+| `AlerterAliveAlert` | `INFO` | ✓ |
+
 
 ### Other (Errors)
 

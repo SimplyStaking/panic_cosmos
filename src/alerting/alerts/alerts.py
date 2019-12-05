@@ -199,3 +199,9 @@ class ProblemWithTelegramBot(Alert):
     def __init__(self, description: str) -> None:
         super().__init__(
             'Problem encountered with telegram bot: {}'.format(description))
+
+
+class AlerterAliveAlert(Alert):
+
+    def __init__(self) -> None:
+        super().__init__('Still running.')
