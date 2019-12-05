@@ -15,7 +15,6 @@ def periodic_alive_reminder(interval: timedelta, channel_set: ChannelSet,
 
 def send_alive_alert(redis: RedisApi, mute_key: str,
                      channel_set: ChannelSet) -> None:
-    # If time elapses and periodic alive reminder is not muted,
-    # inform operator that alerter is still alive.
+    # If reminder is not muted, inform operator that alerter is still alive.
     if not redis.exists(mute_key):
         channel_set.alert_info(AlerterAliveAlert())
