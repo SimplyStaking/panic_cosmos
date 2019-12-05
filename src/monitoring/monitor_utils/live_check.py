@@ -1,7 +1,7 @@
 import logging
 
 import requests
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError as ReqConnectionError
 
 
 def live_check_unsafe(endpoint: str, logger: logging.Logger) -> None:
@@ -14,5 +14,5 @@ def live_check(endpoint: str, logger: logging.Logger) -> bool:
     try:
         live_check_unsafe(endpoint, logger)
         return True
-    except ConnectionError:
+    except ReqConnectionError:
         return False
