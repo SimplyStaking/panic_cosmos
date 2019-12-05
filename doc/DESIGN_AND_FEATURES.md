@@ -24,7 +24,7 @@ P.A.N.I.C. currently supports five alerting channels. By default, only console a
 - **Console**: alerts printed to standard output (`stdout`).
 - **Logging**: alerts logged to an alerts log (`logs/alerts/alerts.log`).
 - **Telegram**: alerts delivered to a Telegram chat via a Telegram bot.
-- **Email**: alerts sent as emails using a personal SMTP server.
+- **Email**: alerts sent as emails using an SMTP server, with option for authentication.
 - **Twilio**: alerts trigger a phone call to grab the node operator's attention.
 
 Instructions on how to set up the alerting channels can be found in the [installation guide](./INSTALL_AND_RUN.md).
@@ -113,11 +113,11 @@ The following are some important points about the periodic alive reminder:
 
 ## Telegram Commands
 
-Telegram bots in P.A.N.I.C. serve two purposes. As mentioned above, they are used to send alerts. However they can also accept commands that allow you to check the status of the alerter (and its running monitors), snooze or unsnooze calls, and conveniently get Cosmos explorer links to validator lists, blocks, and transactions.
+Telegram bots in P.A.N.I.C. serve two purposes. As mentioned above, they are used to send alerts. However they can also accept commands that allow you to check the status of the alerter (and its running monitors), snooze or unsnooze calls, mute or unmute periodic alive reminders, and conveniently get Cosmos explorer links to validator lists, blocks, and transactions.
 
 <img src="./IMG_TELEGRAM_COMMANDS.png" alt="telegram_commands"/>
 
-For example, the `/status` command returns the following, if Redis is running along with three node monitors and one network monitor, and with calls not snoozed:
+For example, the `/status` command returns the following, if Redis is running along with three node monitors and one network monitor, with calls not snoozed, and periodic alive reminder not muted:
 
 <img src="./IMG_TELEGRAM_STATUS_COMMAND.png" alt="telegram_status_command"/>
 
