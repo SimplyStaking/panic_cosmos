@@ -2,7 +2,7 @@
 
 ## 1.1.0
 
-Released on December 05, 2019.
+Released on December 09, 2019.
 
 ### Update Instructions
 
