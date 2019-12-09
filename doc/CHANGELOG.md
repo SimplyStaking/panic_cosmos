@@ -25,7 +25,7 @@ sudo systemctl restart panic_alerter
 
 ### Features
 * Add **authenticated SMTP**, so that email channel can use public SMTP servers, such as smtp.gmail.com, by supplying a valid username and password.
-* Add **periodic alive reminder** as a way for the alerter to inform that it is still running. It is turned on through the setup process and can be muted/unmuted using commands from Telegram.
+* Add **periodic alive reminder** as a way for the alerter to inform the user that it is still running. It is turned on through the setup process and can be muted/unmuted using commands from Telegram.
 * Add **validator peer safe boundary** (`validator_peer_safe_boundary`, default: 5) to limit peer change alerts up to a certain number of peers.
 * Add **max catch up blocks** (`network_monitor_max_catchup_blocks`, default: 500) to limit the number of historical blocks that the network monitor checks if it is not in sync, so that it focuses on the more important present events.
 * Add **current network monitor block height** to Telegram status message.
