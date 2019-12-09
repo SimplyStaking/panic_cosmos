@@ -40,7 +40,7 @@ sudo systemctl restart panic_alerter
   * Now .gitignoring numbered log files (e.g. `*.log.1`)
 
 ### Bug Fixes
-* Fixed validator peer change alert not sent if new number of peers increases to exactly the value of the danger boundary.
+* Fixed full node peer increase alert not sent if the new number of peers is equal to the danger boundary.
 * Setup processes now clear config file before adding new entries.
 
 ## 1.0.0
