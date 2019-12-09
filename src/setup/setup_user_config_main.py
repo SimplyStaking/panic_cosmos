@@ -1,10 +1,12 @@
 from configparser import ConfigParser
+from datetime import timedelta
 
 from src.alerting.alert_utils.telegram_bot_api import TelegramBotApi
 from src.alerting.alert_utils.twilio_api import TwilioApi
 from src.setup.setup_user_config_main_tests import test_telegram_alerts, \
     TestOutcome, test_email_alerts, test_twilio_alerts, \
     test_telegram_commands, test_redis
+from src.utils.datetime import strfdelta
 from src.utils.user_input import yn_prompt
 
 
@@ -237,7 +239,7 @@ def setup_twilio_alerts(cp: ConfigParser) -> None:
     cp['twilio_alerts']['phone_numbers_to_dial'] = to_dial
 
 
-def setup_alerts(cp: ConfigParser) -> None:
+def setup_alert_channels(cp: ConfigParser) -> None:
     print('==== Alerts')
     print('By default, alerts are output to a log file and to '
           'the console. Let\'s set up the rest of the alerts.')
@@ -350,12 +352,90 @@ def setup_redis(cp: ConfigParser) -> None:
     cp['redis']['password'] = password
 
 
+def setup_periodic_alerts(cp: ConfigParser) -> None:
+    print('==== Periodic alerts')
+    setup_periodic_alive_reminder(cp)
+
+
+def setup_periodic_alive_reminder(cp: ConfigParser) -> None:
+    print('---- Periodic alive reminder')
+    print('The periodic alive reminder is a way for the alerter to inform its '
+          'users that it is still running.')
+
+    already_set_up = is_already_set_up(cp, 'periodic_alive_reminder')
+    if already_set_up and \
+            not yn_prompt('The periodic alive reminder is already set up. '
+                          'Do you wish to clear the current config? (Y/n)\n'):
+        return
+
+    reset_section('periodic_alive_reminder', cp)
+    cp['periodic_alive_reminder']['enabled'] = str(False)
+    cp['periodic_alive_reminder']['interval_seconds'] = ''
+    cp['periodic_alive_reminder']['email_enabled'] = ''
+    cp['periodic_alive_reminder']['telegram_enabled'] = ''
+
+    if not already_set_up and \
+            not yn_prompt('Do you wish to set up the periodic alive reminder? '
+                          '(Y/n)\n'):
+        return
+
+    interval = input("Please enter the amount of seconds you want to "
+                     "pass for the periodic alive reminder. Make sure that "
+                     "you insert a positive integer.\n")
+    while True:
+        try:
+            interval_number_rep = int(interval)
+        except ValueError:
+            interval = input("Input is not a valid integer. Please enter "
+                             "another value\n")
+            continue
+        if interval_number_rep > 0:
+            time = timedelta(seconds=int(interval_number_rep))
+            time = strfdelta(time, "{hours}h {minutes}m {seconds}s")
+            if yn_prompt(
+                    'You will be reminded that the alerter is still running '
+                    'after ' + time + ". Do you want to confirm this (Y/n) \n"):
+                break
+            else:
+                interval = input(
+                    "Please enter the amount of seconds you want to "
+                    "pass for the periodic alive reminder. Make sure that "
+                    "you insert a positive integer.\n")
+        else:
+            interval = input("Input is not a positive integer. Please enter "
+                             "another value\n")
+
+    if is_already_set_up(cp, 'email_alerts') and \
+            cp['email_alerts']['enabled'] and \
+            yn_prompt('Would you like the periodic alive reminder '
+                      'to send alerts via e-mail? (Y/n)\n'):
+        email_enabled = str(True)
+    else:
+        email_enabled = str(False)
+
+    if is_already_set_up(cp, 'telegram_alerts') and \
+            cp['telegram_alerts']['enabled'] and \
+            yn_prompt('Would you like the periodic alive reminder '
+                      'to send alerts via Telegram? (Y/n)\n'):
+        telegram_enabled = str(True)
+    else:
+        telegram_enabled = str(False)
+
+    cp['periodic_alive_reminder']['enabled'] = str(True)
+    cp['periodic_alive_reminder']['interval_seconds'] = interval
+    cp['periodic_alive_reminder']['email_enabled'] = email_enabled
+    cp['periodic_alive_reminder']['telegram_enabled'] = telegram_enabled
+
+
 def setup_all(cp: ConfigParser) -> None:
     setup_general(cp)
     print()
-    setup_alerts(cp)
+    setup_alert_channels(cp)
+    print()
+    setup_periodic_alerts(cp)
     print()
     setup_commands(cp)
     print()
     setup_redis(cp)
+    print()
     print('Setup finished.')

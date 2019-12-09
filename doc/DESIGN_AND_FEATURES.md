@@ -6,6 +6,7 @@ This page will present the inner workings of the alerter as well as the features
 - **Alerting Channels**: (console, logging, Telegram, email, Twilio)
 - **Alert Types**: (major, minor, info, error)
 - **Monitor Types**: (node, network, GitHub)
+- **Periodic Alive Reminder**
 - **Telegram Commands**
 - **Redis**
 - **Complete List of Alerts**
@@ -23,7 +24,7 @@ P.A.N.I.C. currently supports five alerting channels. By default, only console a
 - **Console**: alerts printed to standard output (`stdout`).
 - **Logging**: alerts logged to an alerts log (`logs/alerts/alerts.log`).
 - **Telegram**: alerts delivered to a Telegram chat via a Telegram bot.
-- **Email**: alerts sent as emails using a personal SMTP server.
+- **Email**: alerts sent as emails using an SMTP server, with option for authentication.
 - **Twilio**: alerts trigger a phone call to grab the node operator's attention.
 
 Instructions on how to set up the alerting channels can be found in the [installation guide](./INSTALL_AND_RUN.md).
@@ -68,16 +69,27 @@ The network monitor deals with a ***minimum* of one validator node and one (non-
 
 An important note is that the full node(s) should be a reliable data source in terms of availability. So much so that if there are no full nodes accessible, this is considered to be equivalent to the validator losing blocks and thus a `MAJOR` alert is raised.
 
+If the alerter is not in sync with the validator with respect to block height, the maximum number of historical blocks checked is `MCUB`, which is configurable from the internal config (`network_monitor_max_catch_up_blocks`).
+
 In each monitoring round, the network monitor:
 
 1. Gets the node's abci info from `[RPC_URL]/abci_info`
     1. Gets the latest block height *LastH*
-2. For each height *H* from the last block height checked until *LastH*:
+2. Sets *H* = *LastHChecked* + 1 where *LastHChecked is the height of the last block checked by the network monitor
+3. If *LastH* - *LastHChecked* > `MCUB`:
+    1. Sets *H* = *LastH* - `MCUB`
+    2. Gets the block at height *H* from `[RPC_URL]/block?height=H`
+    3. Checks whether our validator is in the list of participating validators
+    4. Increments or resets (depending on the outcome) the missed blocks counter for our validator
+4. Otherwise if *H* <= *LastHChecked* :
     1. Gets the block at height *H* from `[RPC_URL]/block?height=H`
     2. Checks whether our validator is in the list of participating validators
     3. Increments or resets (depending on the outcome) the missed blocks counter for our validator
-3. Saves its state and the nodes' state
-4. Sleeps until the next monitoring round
+5. Saves its state and the nodes' state
+6. Sleeps until the next monitoring round if it is not syncing (*LastH*-*LastHChecked* > 2).
+
+Default value:
+- `MCUB = network_monitor_max_catch_up_blocks = 500`
 
 ### GitHub Monitor
 
@@ -90,13 +102,22 @@ In each monitoring round, the GitHub monitor:
 2. Saves its state
 3. Sleeps until the next monitoring round
 
+## Periodic Alive Reminder
+
+The periodic alive reminder is a way for P.A.N.I.C to inform the operator that it is still running. This can be useful to the operator when no alerts have been sent for a long time, therefore it does not leave the operator wondering whether P.A.N.I.C is still running or not.
+
+The following are some important points about the periodic alive reminder:
+
+1. The time after which a reminder is sent can be specified by the operator using the setup process described [here](./INSTALL_AND_RUN.md).
+2. The periodic alive reminder can be muted and unmuted using Telegram as discussed below.
+
 ## Telegram Commands
 
-Telegram bots in P.A.N.I.C. serve two purposes. As mentioned above, they are used to send alerts. However they can also accept commands that allow you to check the status of the alerter (and its running monitors), snooze or unsnooze calls, and conveniently get Cosmos explorer links to validator lists, blocks, and transactions.
+Telegram bots in P.A.N.I.C. serve two purposes. As mentioned above, they are used to send alerts. However they can also accept commands that allow you to check the status of the alerter (and its running monitors), snooze or unsnooze calls, mute or unmute periodic alive reminders, and conveniently get Cosmos explorer links to validator lists, blocks, and transactions.
 
 <img src="./IMG_TELEGRAM_COMMANDS.png" alt="telegram_commands"/>
 
-For example, the `/status` command returns the following, if Redis is running along with three node monitors and one network monitor, and with calls not snoozed:
+For example, the `/status` command returns the following, if Redis is running along with three node monitors and one network monitor, with calls not snoozed, and periodic alive reminder not muted:
 
 <img src="./IMG_TELEGRAM_STATUS_COMMAND.png" alt="telegram_status_command"/>
 
@@ -171,15 +192,23 @@ Voting power change alerts are mostly info alerts; voting power increase is alwa
 
 ### Number of Peers
 
-Alerts for changes in the number of peers range from info to major. Any increase is positive and is thus an info alert. As for peer decrease alerts:
-- For validator nodes: any decrease to `N` peers inside a configurable danger boundary `D1` is a major alert (i.e. `N <= D1`). Otherwise, any other decrease is a minor alert.
-- For non-validator nodes: any decrease to `N` peers inside a configurable danger boundary `D2` is a minor alert (i.e. `N <= D2`). Otherwise, any other decreases raises no alert.
+Alerts for changes in the number of peers range from info to major.
+#### For Validator Nodes
+- Any decrease to `N` peers inside a configurable danger boundary `D1` is a major alert (i.e. `N <= D1`). 
+- Any decrease to `N` peers inside a configurable safe boundary `S1` is a minor alert (i.e. `D1 < N <= s1`).
+- Any decrease to `N` peers outside a configurable safe boundary `S1` raises no alerts (i.e. `N > S1`).
+- Any increase to `N` peers inside a configurable safe/danger boundary `S1`/`D1` raises an info alert (i.e. `N <= S1/D1`)
+- Any increase to `N` peers outside a configurable safe boundary `S1` raises no alerts (i.e. `N > S1`).
+#### For Non-Validator Nodes 
+- Any decrease to `N` peers inside a configurable danger boundary `D2` raises a minor alert (i.e. `N <= D2`). Otherwise, any other decreases raises no alert.
+- Any increase to `N` peers inside a configurable danger boundary `D2` raises an info alert (i.e. `N <= D2`). Otherwise, any other increase raises no alert.
 
 Non-validator nodes typically have much more peers where not each one of them is important. Thus, once `D2` is exceeded (`N > D2`), a special *'increased outside danger range'* info alert is issued and no further peer increase alerts are issued, to reduce alert spam.
 
 Default values:
 - `D1 = validator_peer_danger_boundary = 1`
-- `D2 = full_node_peer_danger_boundary = 15`
+- `D2 = full_node_peer_danger_boundary = 10`
+- `S1 = validator_peer_safe_boundary = 5`
 
 | Class | Severity | Configurable |
 |---|---|---|
@@ -213,6 +242,17 @@ The only two alerts raised by the GitHub alerter are an info alert when a new re
 |---|---|---|
 | `NewGitHubReleaseAlert` | `INFO` | ✗ |
 | `CannotAccessGitHubPageAlert` | `ERROR` | ✗ |
+
+### Periodic Alive Reminder
+
+If the periodic alive reminder is enabled from the config file, and P.A.N.I.C is running smoothly, the operator is informed every time period that P.A.N.I.C is still running via an info alert.
+
+The periodic alive reminder always uses the console and logger to raise this alert, however, the operator can also receive this alert via Telegram, Email or both, by modifying the config file as described [here](./INSTALL_AND_RUN.md#setting-up-panic).
+
+| Class | Severity | Configurable |
+|---|---|---|
+| `AlerterAliveAlert` | `INFO` | ✓ |
+
 
 ### Other (Errors)
 

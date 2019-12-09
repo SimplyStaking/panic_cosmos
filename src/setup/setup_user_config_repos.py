@@ -72,7 +72,6 @@ def setup_repos(cp: ConfigParser) -> None:
             break
 
     # Add repos to config
-    cp.clear()
     for i, repo in enumerate(repos):
         section = 'repo_' + str(i)
         cp.add_section(section)

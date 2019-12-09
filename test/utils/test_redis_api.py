@@ -5,7 +5,7 @@ from datetime import timedelta
 from time import sleep
 
 from redis import ConnectionError as RedisConnectionError, DataError, \
-    ResponseError
+    AuthenticationError
 
 from src.utils.redis_api import RedisApi
 from test import TestInternalConf, TestUserConf
@@ -80,8 +80,8 @@ class TestRedisApiWithRedisOnline(unittest.TestCase):
         self.redis.set_unsafe(self.key1, self.val1)  # works
         try:
             redis_bad_pass.set_unsafe(self.key1, self.val1)
-            self.fail('Expected ResponseError to be thrown')
-        except ResponseError:
+            self.fail('Expected AuthenticationError to be thrown')
+        except AuthenticationError:
             pass
 
     def test_set_unsafe_sets_the_specified_key_to_the_specified_value(self):

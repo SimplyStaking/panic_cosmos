@@ -1,4 +1,5 @@
 import configparser
+from datetime import timedelta
 
 from src.utils.config_parsers.config_parser import ConfigParser
 
@@ -79,6 +80,19 @@ class UserConfig(ConfigParser):
         self.redis_host = cp['redis']['host']
         self.redis_port = cp['redis']['port']
         self.redis_password = cp['redis']['password']
+
+        # [periodic_alive_reminder]
+        self.periodic_alive_reminder_enabled = to_bool(
+            cp['periodic_alive_reminder']['enabled'])
+        self.interval_seconds = timedelta(
+            seconds=int(cp['periodic_alive_reminder']['interval_seconds'])) \
+            if self.periodic_alive_reminder_enabled else None
+        self.email_enabled = to_bool(
+            cp['periodic_alive_reminder']['email_enabled']) \
+            if self.periodic_alive_reminder_enabled else None
+        self.telegram_enabled = to_bool(
+            cp['periodic_alive_reminder']['telegram_enabled']) \
+            if self.periodic_alive_reminder_enabled else None
 
         # ------------------------ Nodes Config
 

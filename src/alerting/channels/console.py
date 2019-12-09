@@ -1,8 +1,8 @@
 import logging
 import sys
 
-from src.alerting.channels.channel import Channel
 from src.alerting.alerts.alerts import Alert
+from src.alerting.channels.channel import Channel
 
 
 class ConsoleChannel(Channel):

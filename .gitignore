@@ -1,8 +1,8 @@
 .idea/
 __pycache__/
 
-logs/*.log
-logs/*/*.log
+logs/*.log*
+logs/*/*.log*
 !logs/alerts/.gitkeep
 !logs/general/.gitkeep
 

@@ -1,8 +1,8 @@
 import logging
 from typing import Optional
 
-from src.alerting.channels.channel import ChannelSet
 from src.alerting.alerts.alerts import NewGitHubReleaseAlert
+from src.alerting.channels.channel import ChannelSet
 from src.monitoring.monitor_utils.get_json import get_json
 from src.monitoring.monitors.monitor import Monitor
 from src.utils.redis_api import RedisApi
@@ -56,6 +56,7 @@ class GitHubMonitor(Monitor):
         releases = get_json(self.releases_page, self._logger)
 
         # If response contains a message, skip monitoring this time round
+        # since the presence of a message indicates an error in the API call
         if 'message' in releases:
             self.logger.warning('GitHub message: %s', releases['message'])
             return
