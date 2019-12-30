@@ -61,13 +61,11 @@ The node monitor deals with exactly one node, such that multiple node monitors a
 4. Saves its state and the node's state
 5. Sleeps until the next monitoring round
 
-At each step, the network monitor goes through the data sources and picks the first full node that responds (`[RPC_URL]/health`). Having additional full nodes increases data source redundancy.
-
 ### Network Monitor
 
-The network monitor deals with a ***minimum* of one validator node and one (non-validator) full node**. It uses the non-validator full nodes as a data source to check whether the validator nodes are missing blocks, given that the validator would not be a reliable data source if it is experiencing issues.
+The network monitor deals with a ***minimum* of one validator node and one (non-validator) full node**. It uses the full node(s) as a data source to check whether the validator nodes are missing blocks, given that the validator would not be a reliable data source if it is experiencing issues.
 
-An important note is that the full node(s) should be a reliable data source in terms of availability. So much so that if there are no full nodes accessible, this is considered to be equivalent to the validator losing blocks and thus a `MAJOR` alert is raised.
+At each step, the network monitor goes through the data sources and picks the first full node that responds (`[RPC_URL]/health`). Having additional full nodes increases data source redundancy. These full nodes should be a reliable data source in terms of availability. So much so that if there are no full nodes accessible, this is considered to be equivalent to the validator losing blocks and thus a `MAJOR` alert is raised.
 
 If the alerter is not in sync with the validator with respect to block height, the maximum number of historical blocks checked is `MCUB`, which is configurable from the internal config (`network_monitor_max_catch_up_blocks`).
 
