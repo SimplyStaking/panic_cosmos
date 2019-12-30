@@ -41,7 +41,7 @@ class UserConfig(ConfigParser):
         cp.read(nodes_config_file_path)
         cp.read(repos_config_file_path)
 
-        # ------------------------ Alerting Config
+        # ------------------------ Main Config
 
         # [general]
         self.unique_alerter_identifier = cp['general'][
