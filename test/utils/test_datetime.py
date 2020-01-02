@@ -41,3 +41,19 @@ class TestDatetimeFunctions(unittest.TestCase):
         self.assertEqual(str_date,
                          '{}d {}h {}m {}s'.format(expected_d, expected_h,
                                                   expected_m, expected_s))
+
+    def test_strfdelta_includes_days_as_hours_if_days_not_in_fmt(self):
+        d = 1
+        h = 2
+        m = 3
+        s = 4
+
+        str_date = strfdelta(timedelta(days=d, hours=h, minutes=m, seconds=s),
+                             '{hours}h {minutes}m {seconds}s')
+
+        expected_h = h + (d * 24)
+        expected_m = m
+        expected_s = s
+
+        self.assertEqual(str_date, '{}h {}m {}s'.format(
+            expected_h, expected_m, expected_s))
