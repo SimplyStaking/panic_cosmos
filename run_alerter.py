@@ -15,9 +15,11 @@ from src.monitoring.monitors.monitor_starters import start_node_monitor, \
 from src.monitoring.monitors.network import NetworkMonitor
 from src.monitoring.monitors.node import NodeMonitor
 from src.node.node import Node, NodeType
-from src.utils.config_parsers.internal_parsed import InternalConf
+from src.utils.config_parsers.internal_parsed import InternalConf, \
+    INTERNAL_CONFIG_FILE_FOUND, INTERNAL_CONFIG_FILE
 from src.utils.config_parsers.user import NodeConfig, RepoConfig
-from src.utils.config_parsers.user_parsed import UserConf
+from src.utils.config_parsers.user_parsed import UserConf, \
+    MISSING_USER_CONFIG_FILES
 from src.utils.exceptions import InitialisationException
 from src.utils.logging import create_logger
 from src.utils.redis_api import RedisApi
@@ -250,6 +252,13 @@ def run_periodic_alive_reminder():
 
 
 if __name__ == '__main__':
+    if not INTERNAL_CONFIG_FILE_FOUND:
+        sys.exit('Config file {} is missing.'.format(INTERNAL_CONFIG_FILE))
+    elif len(MISSING_USER_CONFIG_FILES) > 0:
+        sys.exit('Config file {} is missing. Make sure that you run the setup '
+                 'script (run_setup.py) before running the alerter.'
+                 ''.format(MISSING_USER_CONFIG_FILES[0]))
+
     # Global loggers initialisation
     logger_redis = create_logger(
         InternalConf.redis_log_file, 'redis',
