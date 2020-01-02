@@ -5,10 +5,14 @@ import logging.handlers
 DUMMY_LOGGER = logging.getLogger('dummy')
 
 
-def create_logger(file: str, name: str, level: str,
-                  rotating: bool = False) -> logging.Logger:
+def create_logger(file: str, name: str, level: str, rotating: bool = False) \
+        -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(level)
+
+    # If logger already has handler, assume it was already created
+    if len(logger.handlers) == 1:
+        return logger
 
     if rotating:
         handler = logging.handlers.RotatingFileHandler(
