@@ -48,7 +48,7 @@ P.A.N.I.C. requires its own setup process, involving three main parts, each of w
 
 All of these steps are packaged into one setup process which is started up by running:
 ```bash
-pipenv update
+pipenv sync
 pipenv run python run_setup.py
 # If multiple versions of Python are installed, the python executable may be `python3.6`, `python3.7`, etc.
 ```
@@ -78,7 +78,7 @@ This file consists of values such as:
 
 After all of the setting-up, you will be glad to find out that running the alerter is a breeze. To start up P.A.N.I.C. simply run the following commands:
 ```bash
-pipenv update
+pipenv sync
 pipenv run python run_alerter.py
 # If multiple versions of Python are installed, the python executable may be `python3.6`, `python3.7`, etc.
 ```
@@ -102,7 +102,7 @@ sudo chmod +x <ALERTER_DIR>/run_alerter.py  # execute permission for runner (2)
 
 # Create virtual environment using pipenv
 cd <ALERTER_DIR>
-su <USER> -c "pipenv update"
+su <USER> -c "pipenv sync"
 ```
 
 The service file will now be created:

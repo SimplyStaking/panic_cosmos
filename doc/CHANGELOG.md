@@ -11,7 +11,7 @@ To update an instance of P.A.N.I.C. to this version:
 git fetch            # Fetch these changes
 git checkout v1.1.0  # Switch to this version
 
-pipenv update        # Update dependencies
+pipenv sync          # Install dependencies
 pipenv run python run_util_update_to_v1.1.0.py
 ```
 
