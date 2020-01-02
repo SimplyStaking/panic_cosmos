@@ -701,12 +701,13 @@ class TestNodeWithRedis(unittest.TestCase):
         self.non_validator = Node(name=self.node_name, rpc_url=None,
                                   node_type=NodeType.NON_VALIDATOR_FULL_NODE,
                                   pubkey=None, network=self.network_name,
-                                  redis=self.redis)
+                                  redis=self.redis,
+                                  internal_conf=TestInternalConf)
 
         self.validator = Node(name=self.node_name, rpc_url=None,
                               node_type=NodeType.VALIDATOR_FULL_NODE,
                               pubkey=None, network=self.network_name,
-                              redis=self.redis)
+                              redis=self.redis, internal_conf=TestInternalConf)
 
     def test_load_state_changes_nothing_if_nothing_saved(self):
         self.validator.load_state(self.logger)
