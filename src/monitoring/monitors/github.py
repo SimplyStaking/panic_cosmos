@@ -5,6 +5,8 @@ from src.alerting.alerts.alerts import NewGitHubReleaseAlert
 from src.alerting.channels.channel import ChannelSet
 from src.monitoring.monitor_utils.get_json import get_json
 from src.monitoring.monitors.monitor import Monitor
+from src.utils.config_parsers.internal import InternalConfig
+from src.utils.config_parsers.internal_parsed import InternalConf
 from src.utils.redis_api import RedisApi
 
 
@@ -13,8 +15,9 @@ class GitHubMonitor(Monitor):
     def __init__(self, monitor_name: str, channels: ChannelSet,
                  logger: logging.Logger, redis: Optional[RedisApi],
                  repo_name: str, releases_page: str,
-                 redis_github_releases_key_prefix: str):
-        super().__init__(monitor_name, channels, logger, redis)
+                 redis_github_releases_key_prefix: str,
+                 internal_conf: InternalConfig = InternalConf):
+        super().__init__(monitor_name, channels, logger, redis, internal_conf)
 
         self.repo_name = repo_name
         self.releases_page = releases_page

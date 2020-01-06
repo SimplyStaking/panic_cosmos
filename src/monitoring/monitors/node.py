@@ -7,14 +7,17 @@ from src.monitoring.monitor_utils.get_json import get_cosmos_json
 from src.monitoring.monitor_utils.live_check import live_check_unsafe
 from src.monitoring.monitors.monitor import Monitor
 from src.node.node import Node
+from src.utils.config_parsers.internal import InternalConfig
+from src.utils.config_parsers.internal_parsed import InternalConf
 from src.utils.redis_api import RedisApi
 
 
 class NodeMonitor(Monitor):
 
     def __init__(self, monitor_name: str, channels: ChannelSet,
-                 logger: logging.Logger, redis: Optional[RedisApi], node: Node):
-        super().__init__(monitor_name, channels, logger, redis)
+                 logger: logging.Logger, redis: Optional[RedisApi], node: Node,
+                 internal_conf: InternalConfig = InternalConf):
+        super().__init__(monitor_name, channels, logger, redis, internal_conf)
         self.node = node
 
         self._redis_alive_key = \

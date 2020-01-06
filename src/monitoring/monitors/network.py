@@ -9,6 +9,8 @@ from src.monitoring.monitor_utils.get_json import get_cosmos_json
 from src.monitoring.monitor_utils.live_check import live_check
 from src.monitoring.monitors.monitor import Monitor
 from src.node.node import Node
+from src.utils.config_parsers.internal import InternalConfig
+from src.utils.config_parsers.internal_parsed import InternalConf
 from src.utils.exceptions import NoLiveFullNodeException
 from src.utils.redis_api import RedisApi
 
@@ -19,8 +21,9 @@ class NetworkMonitor(Monitor):
                  logger: logging.Logger,
                  network_monitor_max_catch_up_blocks: int,
                  redis: Optional[RedisApi], all_full_nodes: List[Node],
-                 all_validators: List[Node]):
-        super().__init__(monitor_name, channels, logger, redis)
+                 all_validators: List[Node],
+                 internal_conf: InternalConfig = InternalConf):
+        super().__init__(monitor_name, channels, logger, redis, internal_conf)
 
         self.network_monitor_max_catch_up_blocks = \
             network_monitor_max_catch_up_blocks
