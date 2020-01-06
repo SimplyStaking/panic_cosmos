@@ -35,8 +35,8 @@ class TestGitHubMonitorWithoutRedis(unittest.TestCase):
 
         self.monitor = GitHubMonitor(self.monitor_name, self.channel_set,
                                      self.logger, None, self.repo_name,
-                                     self.releases_page, self.redis_prefix)
-        self.monitor._internal_conf = TestInternalConf
+                                     self.releases_page, self.redis_prefix,
+                                     TestInternalConf)
 
     @patch(GET_JSON_FUNCTION, return_value={
         'message': 'this would be some error message from GitHub'})
