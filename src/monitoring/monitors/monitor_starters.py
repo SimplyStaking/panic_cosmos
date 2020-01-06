@@ -12,6 +12,7 @@ from src.alerting.alerts.alerts import CouldNotFindLiveFullNodeAlert, \
 from src.monitoring.monitors.github import GitHubMonitor
 from src.monitoring.monitors.network import NetworkMonitor
 from src.monitoring.monitors.node import NodeMonitor
+from src.utils.config_parsers.internal import InternalConfig
 from src.utils.config_parsers.internal_parsed import InternalConf
 from src.utils.exceptions import NoLiveFullNodeException
 from src.utils.timing import TimedTaskLimiter
@@ -83,10 +84,11 @@ def start_network_monitor(network_monitor: NetworkMonitor, monitor_period: int,
 
 
 def start_github_monitor(github_monitor: GitHubMonitor, monitor_period: int,
-                         logger: logging.Logger):
+                         logger: logging.Logger,
+                         internal_config: InternalConfig = InternalConf):
     # Set up alert limiter
     github_error_alert_limiter = TimedTaskLimiter(
-        InternalConf.github_error_interval_seconds)
+        internal_config.github_error_interval_seconds)
 
     # Start
     while True:
