@@ -3,12 +3,16 @@ import time
 import unittest
 from datetime import timedelta
 from time import sleep
+from unittest.mock import patch
 
 from redis import ConnectionError as RedisConnectionError, DataError, \
     AuthenticationError
 
 from src.utils.redis_api import RedisApi
 from test import TestInternalConf, TestUserConf
+
+REDIS_RECENTLY_DOWN_FUNCTION = \
+    'src.utils.redis_api.RedisApi._do_not_use_if_recently_went_down'
 
 
 class TestRedisApiWithRedisOnline(unittest.TestCase):
@@ -242,12 +246,26 @@ class TestRedisApiWithRedisOnline(unittest.TestCase):
         self.assertEqual(self.redis.get(self.key1), self.val1_bytes)
         self.assertEqual(self.redis.get(self.key2), self.val2_bytes)
 
+    @patch(REDIS_RECENTLY_DOWN_FUNCTION, return_value=True)
+    def test_set_multiple_returns_none_and_nothing_set_if_redis_down(self, _):
+        self.assertIsNone(self.redis.set_multiple({
+            self.key1: self.val1,
+            self.key2: self.val2
+        }))
+        self.assertFalse(self.redis.exists_unsafe(self.key1))
+        self.assertFalse(self.redis.exists_unsafe(self.key2))
+
     def test_set_for_temporarily_sets_specified_key_value_pair(self):
         self.redis.set_for(self.key1, self.val1, self.time)
         self.assertEqual(self.redis.get(self.key1), self.val1_bytes)
 
         sleep(self.time_with_error_margin.seconds)
         self.assertNotEqual(self.redis.get(self.key1), self.val1_bytes)
+
+    @patch(REDIS_RECENTLY_DOWN_FUNCTION, return_value=True)
+    def test_set_for_returns_none_and_nothing_set_if_redis_down(self, _):
+        self.assertIsNone(self.redis.set_for(self.key1, self.val1, self.time))
+        self.assertFalse(self.redis.exists_unsafe(self.key1))
 
     def test_get_returns_default_for_unset_key(self):
         self.assertEqual(self.redis.get(self.key1, default=self.default_str),
@@ -261,6 +279,12 @@ class TestRedisApiWithRedisOnline(unittest.TestCase):
     def test_get_returns_none_for_none_string(self):
         self.redis.set(self.key1, 'None')
         self.assertIsNone(self.redis.get(self.key1, default=self.default_str))
+
+    @patch(REDIS_RECENTLY_DOWN_FUNCTION, return_value=True)
+    def test_get_returns_default_if_redis_down(self, _):
+        self.redis.set_unsafe(self.key1, self.val1)
+        self.assertEqual(self.redis.get(self.key1, default=self.default_str),
+                         self.default_str)
 
     def test_get_int_returns_set_integer(self):
         self.redis.set(self.key3, self.val3_int)
@@ -279,6 +303,13 @@ class TestRedisApiWithRedisOnline(unittest.TestCase):
             self.redis.get_int(self.key2, default=self.default_int),
             self.default_int)
 
+    @patch(REDIS_RECENTLY_DOWN_FUNCTION, return_value=True)
+    def test_get_int_returns_default_if_redis_down(self, _):
+        self.redis.set_unsafe(self.key3, self.val3_int)
+        self.assertEqual(
+            self.redis.get_int(self.key3, default=self.default_int),
+            self.default_int)
+
     def test_get_bool_returns_set_boolean(self):
         self.redis.set(self.key4, self.val4)
         self.assertEqual(
@@ -295,11 +326,23 @@ class TestRedisApiWithRedisOnline(unittest.TestCase):
         self.assertFalse(
             self.redis.get_bool(self.key1, default=self.default_bool))
 
+    @patch(REDIS_RECENTLY_DOWN_FUNCTION, return_value=True)
+    def test_get_bool_returns_default_if_redis_down(self, _):
+        self.redis.set_unsafe(self.key4, self.val4)
+        self.assertEqual(
+            self.redis.get_bool(self.key4, default=self.default_bool),
+            self.default_bool)
+
     def test_exists_returns_true_if_exists(self):
         self.redis.set(self.key1, self.val1)
         self.assertTrue(self.redis.exists(self.key1))
 
     def test_exists_returns_false_if_not_exists(self):
+        self.assertFalse(self.redis.exists(self.key1))
+
+    @patch(REDIS_RECENTLY_DOWN_FUNCTION, return_value=True)
+    def test_exists_returns_false_if_redis_down(self, _):
+        self.redis.set_unsafe(self.key1, self.val1)
         self.assertFalse(self.redis.exists(self.key1))
 
     def test_get_keys_returns_empty_list_if_no_keys(self):
@@ -340,6 +383,15 @@ class TestRedisApiWithRedisOnline(unittest.TestCase):
         keys_list = self.redis.get_keys('aa*')
         self.assertSetEqual(set(keys_list), {prefixed_key1, prefixed_key3})
 
+    @patch(REDIS_RECENTLY_DOWN_FUNCTION, return_value=True)
+    def test_get_keys_returns_empty_set_if_redis_down(self, _):
+        self.redis.set_unsafe(self.key1, self.val1)
+        self.redis.set_unsafe(self.key2, self.val2)
+        self.redis.set_unsafe(self.key3, self.val3_int)
+
+        keys_list = self.redis.get_keys()
+        self.assertSetEqual(set(keys_list), set())
+
     def test_remove_does_nothing_if_key_does_not_exists(self):
         self.redis.remove(self.key1)
 
@@ -349,6 +401,14 @@ class TestRedisApiWithRedisOnline(unittest.TestCase):
 
         self.redis.remove(self.key1)
         self.assertFalse(self.redis.exists(self.key1))
+
+    @patch(REDIS_RECENTLY_DOWN_FUNCTION, return_value=True)
+    def test_remove_returns_none_if_redis_down(self, _):
+        self.redis.set_unsafe(self.key1, self.val1)
+        self.assertTrue(self.redis.exists_unsafe(self.key1))
+
+        self.assertIsNone(self.redis.remove(self.key1))
+        self.assertTrue(self.redis.exists_unsafe(self.key1))
 
     def test_delete_all_does_nothing_if_no_keys_exist(self):
         self.redis.delete_all()
@@ -362,6 +422,17 @@ class TestRedisApiWithRedisOnline(unittest.TestCase):
         self.redis.delete_all()
         self.assertFalse(self.redis.exists(self.key1))
         self.assertFalse(self.redis.exists(self.key2))
+
+    @patch(REDIS_RECENTLY_DOWN_FUNCTION, return_value=True)
+    def test_delete_all_returns_none_and_deletes_nothing_if_redis_down(self, _):
+        self.redis.set_unsafe(self.key1, self.val1)
+        self.redis.set_unsafe(self.key2, self.val2)
+        self.assertTrue(self.redis.exists_unsafe(self.key1))
+        self.assertTrue(self.redis.exists_unsafe(self.key2))
+
+        self.assertIsNone(self.redis.delete_all())
+        self.assertTrue(self.redis.exists_unsafe(self.key1))
+        self.assertTrue(self.redis.exists_unsafe(self.key2))
 
     def test_ping_unsafe_returns_true(self):
         self.assertTrue(self.redis.ping_unsafe())
@@ -657,18 +728,18 @@ class TestRedisApiLiveAndDownFeaturesWithRedisOffline(unittest.TestCase):
         self.time = timedelta.max
 
     def test_is_live_by_default(self):
-        self.assertTrue(self.redis._is_live)
+        self.assertTrue(self.redis.is_live)
 
     def test_set_as_live_changes_is_live_to_true(self):
         self.redis._is_live = False
-        self.assertFalse(self.redis._is_live)
+        self.assertFalse(self.redis.is_live)
 
         self.redis._set_as_live()
         self.assertTrue(self.redis._is_live)
 
     def test_et_as_down_changes_is_live_to_false(self):
         self.redis._set_as_down()
-        self.assertFalse(self.redis._is_live)
+        self.assertFalse(self.redis.is_live)
 
     def test_allowed_to_use_by_default(self):
         # noinspection PyBroadException

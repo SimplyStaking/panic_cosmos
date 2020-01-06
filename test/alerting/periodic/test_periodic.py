@@ -1,5 +1,4 @@
 import logging
-import time
 import unittest
 from datetime import datetime, timedelta
 
@@ -8,7 +7,6 @@ from redis import ConnectionError as RedisConnectionError
 from src.alerting.channels.channel import ChannelSet
 from src.alerting.periodic.periodic import send_alive_alert
 from src.utils.redis_api import RedisApi
-from src.utils.timing import TimedTaskLimiter
 from test import TestInternalConf, TestUserConf
 from test.node.test_node import CounterChannel
 
@@ -33,52 +31,22 @@ class TestPeriodic(unittest.TestCase):
         except RedisConnectionError:
             self.fail('Redis is not online.')
 
-        self.timedelta = TestUserConf.interval_seconds
-        self.timing = TimedTaskLimiter(self.timedelta)
         self.mute_key = TestInternalConf.redis_periodic_alive_reminder_mute_key
 
-    def test_periodic_alive_reminder_can_do_task_no_mute_key(self):
-        self.timing.did_task()
-        time.sleep(TestUserConf.interval_seconds.seconds)
+    def test_periodic_alive_reminder_sends_info_alert_if_no_mute_key(self):
         self.counter_channel.reset()  # ignore previous alerts
-        send_alive_alert(self.timing, self.redis, self.mute_key, self.channel_set)
+        send_alive_alert(self.redis, self.mute_key, self.channel_set)
         self.assertEqual(self.counter_channel.minor_count, 0)
         self.assertEqual(self.counter_channel.major_count, 0)
         self.assertEqual(self.counter_channel.info_count, 1)
         self.assertEqual(self.counter_channel.error_count, 0)
 
-    def test_periodic_alive_reminder_cannot_do_task_no_mute_key(self):
-        self.timing.did_task()
-        time.sleep(TestUserConf.interval_seconds.seconds - 2)
-        self.counter_channel.reset()  # ignore previous alerts
-        send_alive_alert(self.timing, self.redis, self.mute_key, self.channel_set)
-        self.assertEqual(self.counter_channel.minor_count, 0)
-        self.assertEqual(self.counter_channel.major_count, 0)
-        self.assertEqual(self.counter_channel.info_count, 0)
-        self.assertEqual(self.counter_channel.error_count, 0)
-
-    def test_periodic_alive_reminder_can_do_task_mute_key_present(self):
-        self.timing.did_task()
-        time.sleep(TestUserConf.interval_seconds.seconds)
+    def test_periodic_alive_reminder_sends_no_alert_if_mute_key_present(self):
         hours = timedelta(hours=float(1))
         until = str(datetime.now() + hours)
         self.redis.set_for(self.mute_key, until, hours)
         self.counter_channel.reset()  # ignore previous alerts
-        send_alive_alert(self.timing, self.redis, self.mute_key, self.channel_set)
-        self.redis.remove(self.mute_key)
-        self.assertEqual(self.counter_channel.minor_count, 0)
-        self.assertEqual(self.counter_channel.major_count, 0)
-        self.assertEqual(self.counter_channel.info_count, 0)
-        self.assertEqual(self.counter_channel.error_count, 0)
-
-    def test_periodic_alive_reminder_cannot_do_task_mute_key_present(self):
-        self.timing.did_task()
-        time.sleep(TestUserConf.interval_seconds.seconds - 3)
-        hours = timedelta(hours=float(1))
-        until = str(datetime.now() + hours)
-        self.redis.set_for(self.mute_key, until, hours)
-        self.counter_channel.reset()  # ignore previous alerts
-        send_alive_alert(self.timing, self.redis, self.mute_key, self.channel_set)
+        send_alive_alert(self.redis, self.mute_key, self.channel_set)
         self.redis.remove(self.mute_key)
         self.assertEqual(self.counter_channel.minor_count, 0)
         self.assertEqual(self.counter_channel.major_count, 0)
