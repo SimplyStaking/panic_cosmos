@@ -15,7 +15,7 @@ This page will present the inner workings of the alerter as well as the features
 
 The below diagram gives an idea of the various components at play when P.A.N.I.C. is running, and how they interact with each other and the node operator:
 
-<img src="./IMG_DESIGN_500x.png" alt="design" width="600"/>
+<img src="./IMG_DESIGN_5x.png" alt="design" width="600"/>
 
 ## Alerting Channels
 
