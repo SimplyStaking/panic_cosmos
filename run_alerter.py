@@ -6,7 +6,7 @@ from src.alerting.alert_utils.get_channel_set import get_full_channel_set
 from src.alerting.alert_utils.get_channel_set import \
     get_periodic_alive_reminder_channel_set
 from src.alerting.alerts.alerts import TerminatedDueToExceptionAlert
-from src.alerting.periodic.periodic import periodic_alive_reminder
+from src.alerting.periodic.periodic import PeriodicAliveReminder
 from src.commands.handlers.telegram import TelegramCommands
 from src.monitoring.monitor_utils.get_json import get_cosmos_json, get_json
 from src.monitoring.monitors.github import GitHubMonitor
@@ -239,13 +239,17 @@ def run_periodic_alive_reminder():
 
     name = "Periodic alive reminder"
 
+    # Initialisation
+    periodic_alive_reminder = PeriodicAliveReminder(
+        UserConf.interval_seconds, periodic_alive_reminder_channel_set,
+        InternalConf.redis_periodic_alive_reminder_mute_key, REDIS)
+
     while True:
+        # Start
         log_and_print('{} started.'.format(name))
+        sys.stdout.flush()
         try:
-            periodic_alive_reminder(
-                UserConf.interval_seconds,
-                periodic_alive_reminder_channel_set,
-                InternalConf.redis_periodic_alive_reminder_mute_key, REDIS)
+            periodic_alive_reminder.start()
         except Exception as e:
             periodic_alive_reminder_channel_set.alert_error(
                 TerminatedDueToExceptionAlert(name, e))
