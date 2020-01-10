@@ -54,13 +54,13 @@ def setup_nodes(cp: ConfigParser) -> None:
                           'new list of nodes, if you wish to do so (Y/n)\n'):
         return
 
-    # Ask if they want to set it up
-    if not yn_prompt('Do you wish to set up the list of nodes? (Y/n)\n'):
-        return
-
     # Clear config and initialise new list
     cp.clear()
     nodes = []
+
+    # Ask if they want to set it up
+    if not yn_prompt('Do you wish to set up the list of nodes? (Y/n)\n'):
+        return
 
     # Get node details and append them to the list of nodes
     while True:

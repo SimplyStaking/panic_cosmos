@@ -45,20 +45,19 @@ def setup_repos(cp: ConfigParser) -> None:
           'of GitHub repositories to monitor will now be set up.')
 
     # Check if list already set up
-    already_set_up = len(cp.sections()) > 0
-    if already_set_up and \
+    if len(cp.sections()) > 0 and \
             not yn_prompt('The list of repositories is already set up. Do you '
-                          'wish clear this list? You will then be asked to set '
-                          'up a new list, if you wish to do so (Y/n)\n'):
-        return
-
-    # Ask if they want to set it up
-    if not yn_prompt('Do you wish to set up the list of repos? (Y/n)\n'):
+                          'wish to clear this list? You will then be asked to '
+                          'set up a new list, if you wish to do so (Y/n)\n'):
         return
 
     # Clear config and initialise new list
     cp.clear()
     repos = []
+
+    # Ask if they want to set it up
+    if not yn_prompt('Do you wish to set up the list of repos? (Y/n)\n'):
+        return
 
     # Get repository details and append them to the list of repositories
     while True:
