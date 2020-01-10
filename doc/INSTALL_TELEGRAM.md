@@ -1,7 +1,7 @@
 # Telegram
 
 1. To create a free **Telegram account**, download the [app for Android / iPhone](https://telegram.org) and sign up using your phone number. 
-2. To create a **Telegram bot**, add [@BotFather](https://telegrm.me/BotFather) on Telegram, press Start, and follow the below steps:
+2. To create a **Telegram bot**, add [@BotFather](https://telegram.me/BotFather) on Telegram, press Start, and follow the below steps:
     1. Send a `/newbot` command and fill in the requested details, including a bot name and username.
     2. Take a note of the API token, which looks something like `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`.
     3. Access the link `t.me/<username>` to your new bot given by BotFather and press Start.
