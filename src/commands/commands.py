@@ -14,6 +14,7 @@ class Commands:
                  redis_snooze_key: Optional[str], redis_mute_key: Optional[str],
                  redis_node_monitor_alive_key_prefix: Optional[str],
                  redis_network_monitor_alive_key_prefix: Optional[str],
+                 redis_network_monitor_last_height_key_prefix: Optional[str],
                  internal_conf: InternalConfig = InternalConf,
                  user_conf: UserConfig = UserConf) -> None:
         self._logger = logger
@@ -26,6 +27,8 @@ class Commands:
             redis_node_monitor_alive_key_prefix
         self._redis_network_monitor_alive_key_prefix = \
             redis_network_monitor_alive_key_prefix
+        self._redis_network_monitor_last_height_key_prefix = \
+            redis_network_monitor_last_height_key_prefix
 
         self._internal_conf = internal_conf
         self._user_conf = user_conf

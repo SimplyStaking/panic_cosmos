@@ -184,7 +184,8 @@ def run_commands_telegram():
                 InternalConf.redis_twilio_snooze_key,
                 InternalConf.redis_periodic_alive_reminder_mute_key,
                 InternalConf.redis_node_monitor_alive_key_prefix,
-                InternalConf.redis_network_monitor_alive_key_prefix
+                InternalConf.redis_network_monitor_alive_key_prefix,
+                InternalConf.redis_network_monitor_last_height_key_prefix,
             ).start_listening()
         except Exception as e:
             full_channel_set.alert_error(
