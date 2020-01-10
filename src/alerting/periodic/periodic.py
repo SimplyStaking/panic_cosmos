@@ -1,20 +1,29 @@
 from datetime import timedelta
 from time import sleep
+from typing import Optional
 
 from src.alerting.alerts.alerts import AlerterAliveAlert
 from src.alerting.channels.channel import ChannelSet
 from src.utils.redis_api import RedisApi
 
 
-def periodic_alive_reminder(interval: timedelta, channel_set: ChannelSet,
-                            mute_key: str, redis: RedisApi):
-    while True:
-        sleep(interval.total_seconds())
-        send_alive_alert(redis, mute_key, channel_set)
+class PeriodicAliveReminder:
 
+    def __init__(self, interval: timedelta, channel_set: ChannelSet,
+                 mute_key: str, redis: Optional[RedisApi]):
+        self._interval = interval
+        self._channel_set = channel_set
+        self._mute_key = mute_key
+        self._redis = redis
+        self._redis_enabled = redis is not None
 
-def send_alive_alert(redis: RedisApi, mute_key: str,
-                     channel_set: ChannelSet) -> None:
-    # If reminder is not muted, inform operator that alerter is still alive.
-    if not redis.exists(mute_key):
-        channel_set.alert_info(AlerterAliveAlert())
+    def start(self):
+        while True:
+            sleep(self._interval.total_seconds())
+            self.send_alive_alert()
+
+    def send_alive_alert(self) -> None:
+        # If it is not the case that Redis is enabled and the reminder is muted,
+        # inform the node operator that the alerter is still running.
+        if not (self._redis_enabled and self._redis.exists(self._mute_key)):
+            self._channel_set.alert_info(AlerterAliveAlert())
