@@ -48,16 +48,14 @@ def setup_nodes(cp: ConfigParser) -> None:
           'names must be unique!')
 
     # Check if list already set up
-    already_set_up = len(cp.sections()) > 0
-    if already_set_up:
-        if not yn_prompt(
-                'The list of nodes is already set up. Do you wish '
-                'to replace this list with a new one? (Y/n)\n'):
-            return
+    if len(cp.sections()) > 0 and \
+            not yn_prompt('The list of nodes is already set up. Do you wish to '
+                          'clear this list? You will then be asked to set up a '
+                          'new list of nodes, if you wish to do so (Y/n)\n'):
+        return
 
-    # Otherwise ask if they want to set it up
-    if not already_set_up and \
-            not yn_prompt('Do you wish to set up the list of nodes? (Y/n)\n'):
+    # Ask if they want to set it up
+    if not yn_prompt('Do you wish to set up the list of nodes? (Y/n)\n'):
         return
 
     # Clear config and initialise new list

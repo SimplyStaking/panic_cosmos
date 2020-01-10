@@ -37,8 +37,7 @@ def setup_general(cp: ConfigParser) -> None:
           'of the P.A.N.I.C. alerter, to avoid any possible Redis clashes. The '
           'name will only be used internally and will not show up in alerts.')
 
-    already_set_up = is_already_set_up(cp, 'general')
-    if already_set_up:
+    if is_already_set_up(cp, 'general'):
         identifier = cp['general']['unique_alerter_identifier']
         if not yn_prompt(
                 'A unique alerter identifier \'{}\' is already set. Do you '
@@ -64,8 +63,7 @@ def setup_telegram_alerts(cp: ConfigParser) -> None:
           'that we highly recommend setting up. This requires you to have a '
           'Telegram bot set up, which is a free and quick procedure.')
 
-    already_set_up = is_already_set_up(cp, 'telegram_alerts')
-    if already_set_up and \
+    if is_already_set_up(cp, 'telegram_alerts') and \
             not yn_prompt('Telegram alerts are already set up. Do you '
                           'wish to clear the current config? (Y/n)\n'):
         return
@@ -75,8 +73,7 @@ def setup_telegram_alerts(cp: ConfigParser) -> None:
     cp['telegram_alerts']['bot_token'] = ''
     cp['telegram_alerts']['bot_chat_id'] = ''
 
-    if not already_set_up and \
-            not yn_prompt('Do you wish to set up Telegram alerts? (Y/n)\n'):
+    if not yn_prompt('Do you wish to set up Telegram alerts? (Y/n)\n'):
         return
 
     while True:
@@ -114,8 +111,7 @@ def setup_email_alerts(cp: ConfigParser) -> None:
           'a message on Telegram or a phone call. Email alerts also require '
           'an SMTP server to be set up for the alerter to be able to send.')
 
-    already_set_up = is_already_set_up(cp, 'email_alerts')
-    if already_set_up and \
+    if is_already_set_up(cp, 'email_alerts') and \
             not yn_prompt('Email alerts are already set up. Do you '
                           'wish to clear the current config? (Y/n)\n'):
         return
@@ -128,8 +124,7 @@ def setup_email_alerts(cp: ConfigParser) -> None:
     cp['email_alerts']['user'] = ''
     cp['email_alerts']['pass'] = ''
 
-    if not already_set_up and \
-            not yn_prompt('Do you wish to set up email alerts? (Y/n)\n'):
+    if not yn_prompt('Do you wish to set up email alerts? (Y/n)\n'):
         return
 
     while True:
@@ -181,8 +176,7 @@ def setup_twilio_alerts(cp: ConfigParser) -> None:
           'with a registered Twilio phone number and a verified phone number.'
           'The timed trial version of Twilio is free.')
 
-    already_set_up = is_already_set_up(cp, 'twilio_alerts')
-    if already_set_up and \
+    if is_already_set_up(cp, 'twilio_alerts') and \
             not yn_prompt('Twilio alerts are already set up. Do you '
                           'wish to clear the current config? (Y/n)\n'):
         return
@@ -194,8 +188,7 @@ def setup_twilio_alerts(cp: ConfigParser) -> None:
     cp['twilio_alerts']['twilio_phone_number'] = ''
     cp['twilio_alerts']['phone_numbers_to_dial'] = ''
 
-    if not already_set_up and \
-            not yn_prompt('Do you wish to set up Twilio alerts? (Y/n)\n'):
+    if not yn_prompt('Do you wish to set up Twilio alerts? (Y/n)\n'):
         return
 
     while True:
@@ -256,8 +249,7 @@ def setup_telegram_commands(cp: ConfigParser) -> None:
           'Once again, this requires you to set up a Telegram bot, which is '
           'free and easy. You can reuse the Telegram bot set up for alerts.')
 
-    already_set_up = is_already_set_up(cp, 'telegram_commands')
-    if already_set_up and \
+    if is_already_set_up(cp, 'telegram_commands') and \
             not yn_prompt('Telegram commands are already set up. Do you '
                           'wish to clear the current config? (Y/n)\n'):
         return
@@ -270,8 +262,7 @@ def setup_telegram_commands(cp: ConfigParser) -> None:
     cp['telegram_commands']['bot_token'] = ''
     cp['telegram_commands']['bot_chat_id'] = ''
 
-    if not already_set_up and \
-            not yn_prompt('Do you wish to set up Telegram commands? (Y/n)\n'):
+    if not yn_prompt('Do you wish to set up Telegram commands? (Y/n)\n'):
         return
 
     while True:
@@ -313,8 +304,7 @@ def setup_redis(cp: ConfigParser) -> None:
           'is also used to be able to get the status of the alerter and to '
           'have some control over it, such as to snooze Twilio phone calls.')
 
-    already_set_up = is_already_set_up(cp, 'redis')
-    if already_set_up and \
+    if is_already_set_up(cp, 'redis') and \
             not yn_prompt('Redis is already set up. Do you wish '
                           'to clear the current config? (Y/n)\n'):
         return
@@ -325,8 +315,7 @@ def setup_redis(cp: ConfigParser) -> None:
     cp['redis']['port'] = ''
     cp['redis']['password'] = ''
 
-    if not already_set_up and \
-            not yn_prompt('Do you wish to set up Redis? (Y/n)\n'):
+    if not yn_prompt('Do you wish to set up Redis? (Y/n)\n'):
         return
 
     while True:
@@ -362,8 +351,7 @@ def setup_periodic_alive_reminder(cp: ConfigParser) -> None:
     print('The periodic alive reminder is a way for the alerter to inform its '
           'users that it is still running.')
 
-    already_set_up = is_already_set_up(cp, 'periodic_alive_reminder')
-    if already_set_up and \
+    if is_already_set_up(cp, 'periodic_alive_reminder') and \
             not yn_prompt('The periodic alive reminder is already set up. '
                           'Do you wish to clear the current config? (Y/n)\n'):
         return
@@ -374,9 +362,8 @@ def setup_periodic_alive_reminder(cp: ConfigParser) -> None:
     cp['periodic_alive_reminder']['email_enabled'] = ''
     cp['periodic_alive_reminder']['telegram_enabled'] = ''
 
-    if not already_set_up and \
-            not yn_prompt('Do you wish to set up the periodic alive reminder? '
-                          '(Y/n)\n'):
+    if not yn_prompt('Do you wish to set up the periodic alive reminder? '
+                     '(Y/n)\n'):
         return
 
     interval = input("Please enter the amount of seconds you want to "
@@ -387,14 +374,14 @@ def setup_periodic_alive_reminder(cp: ConfigParser) -> None:
             interval_number_rep = int(interval)
         except ValueError:
             interval = input("Input is not a valid integer. Please enter "
-                             "another value\n")
+                             "another value:\n")
             continue
         if interval_number_rep > 0:
             time = timedelta(seconds=int(interval_number_rep))
             time = strfdelta(time, "{hours}h {minutes}m {seconds}s")
             if yn_prompt(
                     'You will be reminded that the alerter is still running '
-                    'after ' + time + ". Do you want to confirm this (Y/n) \n"):
+                    'every {}. Is this correct (Y/n) \n'.format(time)):
                 break
             else:
                 interval = input(
@@ -403,7 +390,7 @@ def setup_periodic_alive_reminder(cp: ConfigParser) -> None:
                     "you insert a positive integer.\n")
         else:
             interval = input("Input is not a positive integer. Please enter "
-                             "another value\n")
+                             "another value:\n")
 
     if is_already_set_up(cp, 'email_alerts') and \
             cp['email_alerts']['enabled'] and \
