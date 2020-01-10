@@ -61,6 +61,8 @@ class InternalConfig(ConfigParser):
             section['redis_node_monitor_alive_key_timeout'])
         self.redis_network_monitor_alive_key_timeout = int(
             section['redis_network_monitor_alive_key_timeout'])
+        self.redis_network_monitor_last_height_key_timeout = int(
+            section['redis_network_monitor_last_height_key_timeout'])
 
         # [monitoring_periods]
         section = cp['monitoring_periods']
