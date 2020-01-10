@@ -34,14 +34,17 @@ class NetworkMonitor(Monitor):
         self._last_height_checked = None
         self._monitor_is_syncing = False
 
-        self._redis_alive_key_timeout = \
-            self._internal_conf.redis_network_monitor_alive_key_timeout
-        self._redis_last_height_checked_key = \
-            self._internal_conf.redis_network_monitor_last_height_key_prefix + \
-            self._monitor_name
         self._redis_alive_key = \
             self._internal_conf.redis_network_monitor_alive_key_prefix + \
             self._monitor_name
+        self._redis_last_height_checked_key = \
+            self._internal_conf.redis_network_monitor_last_height_key_prefix + \
+            self._monitor_name
+
+        self._redis_alive_key_timeout = \
+            self._internal_conf.redis_network_monitor_alive_key_timeout
+        self._redis_last_height_key_timeout = \
+            self._internal_conf.redis_network_monitor_last_height_key_timeout
 
         self.load_state()
 
@@ -67,8 +70,9 @@ class NetworkMonitor(Monitor):
                 self._redis_last_height_checked_key, self._last_height_checked)
 
             # Set last height checked key
-            self.redis.set(self._redis_last_height_checked_key,
-                           self._last_height_checked)
+            key = self._redis_last_height_checked_key
+            until = timedelta(seconds=self._redis_last_height_key_timeout)
+            self.redis.set_for(key, self._last_height_checked, until)
 
             # Set alive key (to be able to query latest update from Telegram)
             key = self._redis_alive_key
