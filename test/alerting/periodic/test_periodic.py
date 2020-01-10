@@ -5,13 +5,34 @@ from datetime import datetime, timedelta
 from redis import ConnectionError as RedisConnectionError
 
 from src.alerting.channels.channel import ChannelSet
-from src.alerting.periodic.periodic import send_alive_alert
+from src.alerting.periodic.periodic import PeriodicAliveReminder
 from src.utils.redis_api import RedisApi
 from test import TestInternalConf, TestUserConf
 from test.node.test_node import CounterChannel
 
 
-class TestPeriodic(unittest.TestCase):
+class TestPeriodicWithoutRedis(unittest.TestCase):
+    def setUp(self) -> None:
+        self.alerter_name = 'testalerter'
+        self.logger = logging.getLogger('dummy')
+        self.counter_channel = CounterChannel(self.logger)
+        self.channel_set = ChannelSet([self.counter_channel])
+
+        self.mute_key = TestInternalConf.redis_periodic_alive_reminder_mute_key
+
+        self.par = PeriodicAliveReminder(
+            timedelta(), self.channel_set, self.mute_key, None)
+
+    def test_periodic_alive_reminder_sends_info_alert_if_redis_disabled(self):
+        self.counter_channel.reset()  # ignore previous alerts
+        self.par.send_alive_alert()
+        self.assertEqual(self.counter_channel.minor_count, 0)
+        self.assertEqual(self.counter_channel.major_count, 0)
+        self.assertEqual(self.counter_channel.info_count, 1)
+        self.assertEqual(self.counter_channel.error_count, 0)
+
+
+class TestPeriodicWithRedis(unittest.TestCase):
     def setUp(self) -> None:
         self.alerter_name = 'testalerter'
         self.logger = logging.getLogger('dummy')
@@ -33,9 +54,12 @@ class TestPeriodic(unittest.TestCase):
 
         self.mute_key = TestInternalConf.redis_periodic_alive_reminder_mute_key
 
+        self.par = PeriodicAliveReminder(
+            timedelta(), self.channel_set, self.mute_key, self.redis)
+
     def test_periodic_alive_reminder_sends_info_alert_if_no_mute_key(self):
         self.counter_channel.reset()  # ignore previous alerts
-        send_alive_alert(self.redis, self.mute_key, self.channel_set)
+        self.par.send_alive_alert()
         self.assertEqual(self.counter_channel.minor_count, 0)
         self.assertEqual(self.counter_channel.major_count, 0)
         self.assertEqual(self.counter_channel.info_count, 1)
@@ -46,7 +70,7 @@ class TestPeriodic(unittest.TestCase):
         until = str(datetime.now() + hours)
         self.redis.set_for(self.mute_key, until, hours)
         self.counter_channel.reset()  # ignore previous alerts
-        send_alive_alert(self.redis, self.mute_key, self.channel_set)
+        self.par.send_alive_alert()
         self.redis.remove(self.mute_key)
         self.assertEqual(self.counter_channel.minor_count, 0)
         self.assertEqual(self.counter_channel.major_count, 0)
