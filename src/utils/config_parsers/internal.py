@@ -51,6 +51,12 @@ class InternalConfig(ConfigParser):
         self.redis_periodic_alive_reminder_mute_key = \
             section['redis_periodic_alive_reminder_mute_key']
 
+        self.redis_twilio_snooze_key_default_hours = timedelta(hours=float(
+            section['redis_twilio_snooze_key_default_hours']))
+        self.redis_periodic_alive_reminder_mute_key_default_hours = timedelta(
+            hours=float(section['redis_periodic_alive_reminder_mute_key_'
+                                'default_hours']))
+
         self.redis_node_monitor_alive_key_timeout = int(
             section['redis_node_monitor_alive_key_timeout'])
         self.redis_network_monitor_alive_key_timeout = int(
