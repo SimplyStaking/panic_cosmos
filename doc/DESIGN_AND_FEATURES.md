@@ -71,7 +71,7 @@ If the alerter is not in sync with the validator with respect to block height, t
 
 In each monitoring round, the network monitor:
 
-1. Gets the node's abci info from `[RPC_URL]/abci_info`
+1. Gets the node's abci info from `[RPC_URL]/status`
     1. Gets the latest block height *LastH*
 2. Sets *H* = *LastHChecked* + 1 where *LastHChecked is the height of the last block checked by the network monitor
 3. If *LastH* - *LastHChecked* > `MCUB`:

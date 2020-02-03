@@ -125,10 +125,14 @@ class NetworkMonitor(Monitor):
         self._logger.debug('Moving to next height.')
 
     def monitor(self) -> None:
-        # Get abci_info and, from that, the last height to be checked
-        abci_info = get_cosmos_json(self.node.rpc_url + '/abci_info',
-                                    self._logger)
-        last_height_to_check = int(abci_info['response']['last_block_height'])
+        # Get node status and, from that, the last height to be checked
+        status = get_cosmos_json(self.node.rpc_url + '/status',
+                                 self._logger)
+        last_height_to_check = int(status['sync_info']['latest_block_height'])
+
+        # If the chain has not started, return as there are no blocks to get
+        if last_height_to_check == 0:
+            return
 
         # If this is the first height being checked, ignore previous heights
         if self._last_height_checked is None:
