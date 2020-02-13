@@ -1,5 +1,45 @@
 # Change Log
 
+## 1.1.1
+
+Released on January 21, 2020.
+
+### Update Instructions
+If still not updated to `v1.1.0`, check out the [`v1.1.0` update instructions](https://github.com/SimplyVC/panic_cosmos/releases/tag/v1.1.0).
+
+For `v1.1.0` to `v1.1.1`:
+```shell script
+git fetch            # Fetch these changes
+git checkout v1.1.1  # Switch to this version
+pipenv sync          # Update dependencies
+```
+
+P.A.N.I.C. can now be started up. If the alerter was running as a Linux service, the service should now be restarted:
+```shell script
+sudo systemctl restart panic_alerter
+```
+
+User config files from `v1.1.0` are compatible with `v1.1.1`.
+
+### Features
+* `/snooze` command now snoozes for a default number of hours (1 hour)
+* `/mute` command now mutes for a default number of hours (1 hour)
+
+### Changes and Improvements
+* Updated Telegram explorer links from cosmoshub-2 to cosmoshub-3
+* More testing coverage and improved code testability
+* Minor documentation updates and fixes
+* Improved Telegram command replies, especially when snoozing and muting
+* Added timeout for "last height" status message in Telegram, similar to other messages
+* Cleaned-up Telegram command handler class
+
+### Bug Fixes
+* Fixed double-logging in general log due to logger object being created twice
+* Fixed tests not running due to PANIC expecting non-testing config files to exist
+* Fixed periodic alive reminder crashing if Redis is not set up
+* Fixed setup procedure not clearing nodes/repos if user chooses to do so
+* Time-spans now show number of days if they exceed 24 hours
+
 ## 1.1.0
 
 Released on December 09, 2019.
