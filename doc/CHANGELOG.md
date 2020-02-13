@@ -1,5 +1,10 @@
 # Change Log
 
+## Unreleased
+
+### Bug Fixes
+* Network monitor no longer crashes if the chain of the nodes being monitored has not started
+
 ## 1.1.1
 
 Released on January 21, 2020.
