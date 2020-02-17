@@ -5,7 +5,8 @@ from typing import List, Tuple
 from src.alerting.alert_utils.get_channel_set import get_full_channel_set
 from src.alerting.alert_utils.get_channel_set import \
     get_periodic_alive_reminder_channel_set
-from src.alerting.alerts.alerts import TerminatedDueToExceptionAlert
+from src.alerting.alerts.alerts import TerminatedDueToExceptionAlert, \
+    NodeInaccessibleDuringStartup, RepoInaccessibleDuringStartup
 from src.alerting.periodic.periodic import PeriodicAliveReminder
 from src.commands.handlers.telegram import TelegramCommands
 from src.monitoring.monitor_utils.get_json import get_cosmos_json, get_json
@@ -65,25 +66,23 @@ def node_from_node_config(node_config: NodeConfig):
     return node
 
 
-def test_connection_to_github_pages():
-    for repo in UserConf.filtered_repos:
-        # Get releases page
-        releases_page = InternalConf.github_releases_template.format(
-            repo.repo_page)
+def test_connection_to_github_page(repo: RepoConfig):
+    # Get releases page
+    releases_page = InternalConf.github_releases_template.format(
+        repo.repo_page)
 
-        # Test connection
-        log_and_print('Trying to connect to {}'.format(releases_page))
-        try:
-            releases = get_json(releases_page, logger_general)
-            if 'message' in releases and releases['message'] == 'Not Found':
-                raise InitialisationException(
-                    'Successfully reached {} but URL is '
-                    'not valid.'.format(releases_page))
-            else:
-                log_and_print('Success.')
-        except Exception:
-            raise InitialisationException('Could not reach {}.'
-                                          ''.format(releases_page))
+    # Test connection
+    log_and_print('Trying to connect to {}'.format(releases_page))
+    try:
+        releases = get_json(releases_page, logger_general)
+        if 'message' in releases and releases['message'] == 'Not Found':
+            raise InitialisationException('Successfully reached {} but URL '
+                                          'is not valid.'.format(releases_page))
+        else:
+            log_and_print('Success.')
+    except Exception:
+        raise InitialisationException('Could not reach {}.'
+                                      ''.format(releases_page))
 
 
 def run_monitor_nodes(node: Node):
@@ -300,11 +299,24 @@ if __name__ == '__main__':
     sys.stdout.flush()
 
     # Nodes initialisation
-    try:
-        nodes = [node_from_node_config(n) for n in UserConf.filtered_nodes]
-    except InitialisationException as ie:
-        logger_general.error(ie)
-        sys.exit(ie)
+    nodes = []
+    nodes_inaccessible = []
+    for n in UserConf.filtered_nodes:
+        try:
+            nodes.append(node_from_node_config(n))
+        except InitialisationException as ie:
+            log_and_print(str(ie))
+            nodes_inaccessible.append(n)
+            if n.node_is_validator:
+                full_channel_set.alert_major(
+                    NodeInaccessibleDuringStartup(n.node_name))
+            else:
+                full_channel_set.alert_minor(
+                    NodeInaccessibleDuringStartup(n.node_name))
+
+    # Remove inaccessible nodes
+    for ni in nodes_inaccessible:
+        UserConf.filtered_nodes.remove(ni)
 
     # Organize nodes into lists according to how they will be monitored
     node_monitor_nodes = []
@@ -322,11 +334,19 @@ if __name__ == '__main__':
                         for net in unique_networks}
 
     # Test connection to GitHub pages
-    try:
-        test_connection_to_github_pages()
-    except InitialisationException as ie:
-        logger_general.error(ie)
-        sys.exit(ie)
+    repos_inaccessible = []
+    for r in UserConf.filtered_repos:
+        try:
+            test_connection_to_github_page(r)
+        except InitialisationException as ie:
+            log_and_print(str(ie))
+            repos_inaccessible.append(r)
+            full_channel_set.alert_minor(
+                RepoInaccessibleDuringStartup(r.repo_name))
+
+    # Remove inaccessible repos
+    for ri in repos_inaccessible:
+        UserConf.filtered_repos.remove(ri)
 
     # Run monitors
     monitor_node_count = len(node_monitor_nodes)

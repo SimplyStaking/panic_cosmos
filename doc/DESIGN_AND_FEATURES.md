@@ -157,6 +157,8 @@ A *delay* or *inaccessibility* is defined by a hard-coded 10-second read timeout
 | `StillCannotAccessNodeAlert` | `MINOR`/`MAJOR` | ✗ |
 | `NowAccessibleAlert` | `INFO` | ✗ |
 | `CouldNotFindLiveFullNodeAlert` | `MAJOR` | ✗ |
+| `NodeInaccessibleDuringStartup` | `MINOR`/`MAJOR` | ✗ |
+| `RepoInaccessibleDuringStartup` | `MINOR` | ✗ |
 
 ### Missing Blocks (Validator Nodes Only)
 

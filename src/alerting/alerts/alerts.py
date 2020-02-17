@@ -214,3 +214,21 @@ class AlerterAliveAlert(Alert):
 
     def __init__(self) -> None:
         super().__init__('Still running.')
+
+
+class NodeInaccessibleDuringStartup(Alert):
+
+    def __init__(self, node: str) -> None:
+        super().__init__(
+            'Node {} was not accessible during PANIC startup. {} will NOT be '
+            'monitored until it is accessible and PANIC restarted afterwards. '
+            'Some features of PANIC might be affected.'.format(node, node))
+
+
+class RepoInaccessibleDuringStartup(Alert):
+
+    def __init__(self, repo: str) -> None:
+        super().__init__(
+            'Repo {} was not accessible during PANIC startup. {} will NOT be '
+            'monitored until it is accessible and PANIC restarted afterwards. '
+            ''.format(repo, repo))

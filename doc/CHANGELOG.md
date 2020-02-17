@@ -5,6 +5,9 @@
 ### Bug Fixes
 * Network monitor no longer crashes if the chain of the nodes being monitored has not started
 
+### Changes and Improvements
+* Alerter can now start even if one or more nodes/repos are not accessible. It sends a single alert per inaccessible node/repo
+
 ## 1.1.1
 
 Released on January 21, 2020.
