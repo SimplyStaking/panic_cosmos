@@ -98,7 +98,11 @@ class NetworkMonitor(Monitor):
                                 str(height), self._logger)
 
         # Get validators participating in the precommits of last commit
-        block_precommits = block['block']['last_commit']['precommits']
+        last_commit = block['block']['last_commit']
+        if 'precommits' in last_commit:
+            block_precommits = last_commit['precommits']  # tendermint <v0.33
+        else:
+            block_precommits = last_commit['signatures']  # tendermint v0.33+
         non_null_precommits = filter(lambda p: p, block_precommits)
         block_precommits_validators = set(
             map(lambda p: p['validator_address'], non_null_precommits))

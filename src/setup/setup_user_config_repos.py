@@ -1,5 +1,5 @@
 from configparser import ConfigParser
-from typing import Optional
+from typing import Optional, List
 
 from src.monitoring.monitor_utils.get_json import get_json
 from src.utils.config_parsers.internal_parsed import InternalConf
@@ -8,10 +8,17 @@ from src.utils.logging import DUMMY_LOGGER
 from src.utils.user_input import yn_prompt
 
 
-def get_repo() -> Optional[RepoConfig]:
-    # Get repo name
-    repo_name = input('GitHub repository name (to know which repository '
-                      'triggered an alert, example: Cosmos SDK):\n')
+def get_repo(repos_so_far: List[RepoConfig]) -> Optional[RepoConfig]:
+    # Get repo's name
+    repo_names_so_far = [r.repo_name for r in repos_so_far]
+    while True:
+        repo_name = input(
+            'Unique GitHub repository name (to know which repository '
+            'triggered an alert, example: Cosmos SDK):\n')
+        if repo_name in repo_names_so_far:
+            print('Repo name must be unique.')
+        else:
+            break
 
     # Get repo page
     while True:
@@ -61,7 +68,7 @@ def setup_repos(cp: ConfigParser) -> None:
 
     # Get repository details and append them to the list of repositories
     while True:
-        repo = get_repo()
+        repo = get_repo(repos)
         if repo is not None:
             repos.append(repo)
             print('Successfully added repository.')

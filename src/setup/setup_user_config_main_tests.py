@@ -60,8 +60,8 @@ def test_twilio_alerts(twilio_no: str, to_dial: str, twilio_api: TwilioApi,
                        internal_conf: InternalConfig = InternalConf) \
         -> TestOutcome:
     try:
-        twilio_api.dial_number(twilio_no, to_dial,
-                               internal_conf.twiml_instructions_url)
+        twilio_api.dial_number(twilio_no, to_dial, internal_conf.twiml,
+                               internal_conf.twiml_is_url)
         print('Test phone call requested successfully. Please wait a bit.')
 
         if yn_prompt('Was the testing successful? (Y/n)\n'):
