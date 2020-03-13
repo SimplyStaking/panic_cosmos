@@ -3,10 +3,13 @@
 ## Unreleased
 
 ### Bug Fixes
-* Network monitor no longer crashes if the chain of the nodes being monitored has not started
+* (genesis) Network monitor no longer crashes if the chain of the nodes being monitored has not started
+* (repos) Repository names are now forced to be unique during setup. This is necessary to prevent key clashes in Redis
+* (alerts) Added support for Cosmos SDK chains that use Tendermint v0.33+ to solve a startup crash
 
 ### Changes and Improvements
-* Alerter can now start even if one or more nodes/repos are not accessible. It sends a single alert per inaccessible node/repo
+* (startup) Alerter can now start even if one or more nodes/repos are not accessible. It sends a single alert per inaccessible node/repo
+* (twilio) Added official support for [TwiML](https://www.twilio.com/docs/voice/twiml). Configurable from the internal config to either a URL or raw TwiML instructions
 
 ## 1.1.1
 

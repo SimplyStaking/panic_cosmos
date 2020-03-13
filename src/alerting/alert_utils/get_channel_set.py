@@ -66,7 +66,8 @@ def _get_twilio_channel(channel_name: str, logger_general: logging.Logger,
                                    redis, twilio,
                                    user_conf.twilio_phone_number,
                                    user_conf.twilio_dial_numbers,
-                                   internal_conf.twiml_instructions_url,
+                                   internal_conf.twiml,
+                                   internal_conf.twiml_is_url,
                                    internal_conf.redis_twilio_snooze_key,
                                    backup_channels_for_twilio)
     return twilio_channel

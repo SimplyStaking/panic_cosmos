@@ -17,5 +17,7 @@
 3. The auth token, available in the account dashboard.
 4. A verified personal phone number *(at least one)*
 
+If you wish to explore more advanced features, PANIC also supports configurable [TwiML](https://www.twilio.com/docs/voice/twiml); instructions which can re-program Twilio to do more than just call numbers. By default, the TwiML is set to [reject calls](https://www.twilio.com/docs/voice/twiml/reject) as soon as the recipient picks up, without any charges. This can be re-configured from the twilio section of the internal config to either a URL or raw TwiML instructions.
+
 ---
 [Back to main installation page](INSTALL_AND_RUN.md)

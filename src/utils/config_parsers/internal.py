@@ -5,6 +5,10 @@ from datetime import timedelta
 from src.utils.config_parsers.config_parser import ConfigParser
 
 
+def to_bool(bool_str: str) -> bool:
+    return bool_str.lower() in ['true', 'yes', 'y']
+
+
 class InternalConfig(ConfigParser):
     # Use internal_parsed.py rather than creating a new instance of this class
     def __init__(self, config_file_path: str) -> None:
@@ -32,7 +36,8 @@ class InternalConfig(ConfigParser):
 
         # [twilio]
         section = cp['twilio']
-        self.twiml_instructions_url = section['twiml_instructions_url']
+        self.twiml = section['twiml']
+        self.twiml_is_url = to_bool(section['twiml_is_url'])
 
         # [redis]
         section = cp['redis']
