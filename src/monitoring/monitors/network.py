@@ -2,7 +2,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-import dateutil
+import dateutil.parser
 
 from src.alerting.channels.channel import ChannelSet
 from src.monitoring.monitor_utils.get_json import get_cosmos_json
@@ -101,9 +101,12 @@ class NetworkMonitor(Monitor):
         last_commit = block['block']['last_commit']
         if 'precommits' in last_commit:
             block_precommits = last_commit['precommits']  # tendermint <v0.33
+            non_null_precommits = \
+                filter(lambda p: p, block_precommits)
         else:
             block_precommits = last_commit['signatures']  # tendermint v0.33+
-        non_null_precommits = filter(lambda p: p, block_precommits)
+            non_null_precommits = \
+                filter(lambda p: p['signature'], block_precommits)
         block_precommits_validators = set(
             map(lambda p: p['validator_address'], non_null_precommits))
         total_no_of_missing_validators = \

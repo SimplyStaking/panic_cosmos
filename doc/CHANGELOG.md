@@ -5,7 +5,10 @@
 ### Bug Fixes
 * (genesis) Network monitor no longer crashes if the chain of the nodes being monitored has not started
 * (repos) Repository names are now forced to be unique during setup. This is necessary to prevent key clashes in Redis
+
+### Tendermint Compatibility Fixes
 * (alerts) Added support for Cosmos SDK chains that use Tendermint v0.33+ to solve a startup crash
+* (alerts) For chains that use Tendermint v0.33+, fixed total number of missing validators outputted when the missed blocks alert is raised
 
 ### Changes and Improvements
 * (startup) Alerter can now start even if one or more nodes/repos are not accessible. It sends a single alert per inaccessible node/repo
