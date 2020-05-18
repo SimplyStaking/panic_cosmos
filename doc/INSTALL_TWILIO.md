@@ -7,9 +7,9 @@
     3. Take a note of the (i) Twilio phone number.
     4. Take a note of the (ii) account SID and (iii) auth token.
 - All that remains now is to add a number that Twilio is able to call:
-    5. Navigate to the [Verified Caller IDs page](https://www.twilio.com/console/phone-numbers/verified).
-    6. Press the red **+** to add a new personal number and follow the verification steps.
-    7. One number is enough for now, but you can repeat these steps to verify more than one number.
+    1. Navigate to the [Verified Caller IDs page](https://www.twilio.com/console/phone-numbers/verified).
+    2. Press the red **+** to add a new personal number and follow the verification steps.
+    3. One number is enough for now, but you can repeat these steps to verify more than one number.
 
 **At the end, you should have:**
 1. A Twilio phone number.
