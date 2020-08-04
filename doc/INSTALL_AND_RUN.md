@@ -114,7 +114,7 @@ sudo nano /etc/systemd/system/panic_alerter.service
 
 It should contain the following, replacing `<USER>` with the created user's name and the two `<ALERTER_DIR>` with the alerter's installation directory. This assumes that `pipenv` is found under `/usr/local/bin/pipenv` and that the Python executable is `python` (if multiple versions of Python are installed, the `python` executable may be `python3.6`, `python3.7`, etc.). We recommend that you run the command set for ExecStart manually to check that it works before starting the service.
 
-*Make sure your <ALERTER_DIR> is full path like /root/panic_cosmos/*
+*Make sure that the `<ALERTER_DIR>` is the full path, for example: `/root/panic_cosmos/`*
 ```bash
 [Unit]
 Description=P.A.N.I.C.
