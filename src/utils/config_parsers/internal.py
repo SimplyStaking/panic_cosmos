@@ -82,8 +82,10 @@ class InternalConfig(ConfigParser):
 
         # [alert_intervals_and_limits]
         section = cp['alert_intervals_and_limits']
-        self.downtime_alert_time_interval = timedelta(seconds=int(
-            section['downtime_alert_interval_seconds']))
+        self.downtime_initial_alert_delay = timedelta(seconds=int(
+            section['downtime_initial_alert_delay_seconds']))
+        self.downtime_reminder_interval_seconds = timedelta(seconds=int(
+            section['downtime_reminder_interval_seconds']))
         self.max_missed_blocks_time_interval = timedelta(seconds=int(
             section['max_missed_blocks_interval_seconds']))
         self.max_missed_blocks_in_time_interval = int(

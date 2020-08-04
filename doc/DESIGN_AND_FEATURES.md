@@ -146,9 +146,13 @@ A complete list of alerts will now be presented. These are grouped into sections
 
 ### Access to Nodes
 
-Problems when trying to access nodes start with an info alert stating that there are some delays. If the node is inaccessible two times in a row, a minor (major if validator) alert is raised. An info alert is raised as soon as the node is accessible again. Lastly, if a network monitor cannot access any data source, it raises a major alert.
+Problems when trying to access nodes start with an info alert stating that there are some delays. This info alert is only raised if the node is inaccessible two times in a row.  If the node is inaccessible for `X` seconds, a minor/major alert is raised if the node is a non-validator/validator respectively. In addition to this, every next `Y` seconds, another downtime reminder alert is raised if the node is still down. As soon as the node becomes accessible again, an info alert is raised, informing the operator that the node is back up. Lastly, if a network monitor cannot access any data source, it raises a major alert.
 
-A *delay* or *inaccessibility* is defined by a hard-coded 10-second read timeout.
+The values `X` and `Y` are customisable from the `internal_config.ini`, in which they are represented by the following fields:
+- `X`: `downtime_initial_alert_delay_seconds`
+- `Y`: `downtime_reminder_interval_seconds`
+
+An *inaccessibility* is defined by a hard-coded 10-second read timeout.
 
 | Class | Severity | Configurable |
 |---|---|---|

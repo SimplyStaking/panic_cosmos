@@ -38,6 +38,7 @@ class Node:
         self._voting_power = None
         self._catching_up = False
         self._no_of_peers = None
+        self._experiencing_delays_alert_sent = False
         self._initial_downtime_alert_sent = False
 
         self._validator_peer_danger_boundary = \
@@ -49,8 +50,10 @@ class Node:
         self._missed_blocks_danger_boundary = \
             internal_conf.missed_blocks_danger_boundary
 
-        self._downtime_alert_limiter = TimedTaskLimiter(
-            internal_conf.downtime_alert_time_interval)
+        self._downtime_initial_alert_delayer = TimedTaskLimiter(
+            internal_conf.downtime_initial_alert_delay)
+        self._downtime_reminder_limiter = TimedTaskLimiter(
+            internal_conf.downtime_reminder_interval_seconds)
         self._timed_block_miss_tracker = TimedOccurrenceTracker(
             internal_conf.max_missed_blocks_in_time_interval,
             internal_conf.max_missed_blocks_time_interval)
@@ -145,29 +148,45 @@ class Node:
         logger.debug('%s set_as_down: is_down(currently)=%s, channels=%s',
                      self, self.is_down, channels)
 
-        # Alert (varies depending on whether was already down)
-        if self.is_down and not self._initial_downtime_alert_sent:
-            if self.is_validator:
-                channels.alert_major(CannotAccessNodeAlert(self.name))
-            else:
-                channels.alert_minor(CannotAccessNodeAlert(self.name))
-            self._downtime_alert_limiter.did_task()
-            self._initial_downtime_alert_sent = True
-        elif self.is_down and self._downtime_alert_limiter.can_do_task():
-            downtime = strfdelta(datetime.now() - self._went_down_at,
-                                 "{hours}h, {minutes}m, {seconds}s")
-            if self.is_validator:
-                channels.alert_major(StillCannotAccessNodeAlert(
-                    self.name, self._went_down_at, downtime))
-            else:
-                channels.alert_minor(StillCannotAccessNodeAlert(
-                    self.name, self._went_down_at, downtime))
-            self._downtime_alert_limiter.did_task()
-        elif not self.is_down:
-            # Do not alert for now just in case this is a connection hiccup
-            channels.alert_info(ExperiencingDelaysAlert(self.name))
+        # If node was not down before, do not alert for now, just in case it's
+        # a connection hiccup but take note of the start of the downtime
+        if not self.is_down:
             self._went_down_at = datetime.now()
+            self._experiencing_delays_alert_sent = False
             self._initial_downtime_alert_sent = False
+            self._downtime_initial_alert_delayer.did_task()
+        # If node was down and we have not yet sent an alert about this, send
+        # an informational 'experiencing delays' alert as a warning
+        elif not self._experiencing_delays_alert_sent:
+            channels.alert_info(ExperiencingDelaysAlert(self.name))
+            self._experiencing_delays_alert_sent = True
+        # If we have not yet sent an initial downtime alert, and enough
+        # time has passed for it, then send an initial alert
+        elif not self._initial_downtime_alert_sent:
+            if self._downtime_initial_alert_delayer.can_do_task():
+                downtime = strfdelta(datetime.now() - self._went_down_at,
+                                     "{hours}h, {minutes}m, {seconds}s")
+                if self.is_validator:
+                    channels.alert_major(CannotAccessNodeAlert(
+                        self.name, self._went_down_at, downtime))
+                else:
+                    channels.alert_minor(CannotAccessNodeAlert(
+                        self.name, self._went_down_at, downtime))
+                self._downtime_reminder_limiter.did_task()
+                self._initial_downtime_alert_sent = True
+        # If we already sent an initial alert and enough time has passed
+        # for a reminder alert, then send a reminder alert
+        else:
+            if self._downtime_reminder_limiter.can_do_task():
+                downtime = strfdelta(datetime.now() - self._went_down_at,
+                                     "{hours}h, {minutes}m, {seconds}s")
+                if self.is_validator:
+                    channels.alert_major(StillCannotAccessNodeAlert(
+                        self.name, self._went_down_at, downtime))
+                else:
+                    channels.alert_minor(StillCannotAccessNodeAlert(
+                        self.name, self._went_down_at, downtime))
+                self._downtime_reminder_limiter.did_task()
 
     def set_as_up(self, channels: ChannelSet, logger: logging.Logger) -> None:
 
@@ -184,7 +203,8 @@ class Node:
                     self.name, self._went_down_at, downtime))
 
             # Reset downtime-related values
-            self._downtime_alert_limiter.reset()
+            self._downtime_initial_alert_delayer.reset()
+            self._downtime_reminder_limiter.reset()
             self._went_down_at = None
 
     def add_missed_block(self, block_height: int, block_time: datetime,

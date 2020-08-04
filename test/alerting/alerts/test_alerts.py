@@ -1,25 +1,19 @@
 import unittest
-from datetime import datetime
 
-from src.alerting.alerts.alerts import StillCannotAccessNodeAlert, \
-    ExperiencingDelaysAlert, NowAccessibleAlert, NewGitHubReleaseAlert, \
-    MissedBlocksAlert, TimedMissedBlocksAlert, NoLongerMissingBlocksAlert, \
-    VotingPowerIncreasedAlert, VotingPowerDecreasedAlert, \
-    VotingPowerDecreasedByAlert, VotingPowerIncreasedByAlert, \
-    IsCatchingUpAlert, IsNoLongerCatchingUpAlert, PeersIncreasedAlert, \
-    PeersIncreasedOutsideDangerRangeAlert, CouldNotFindLiveFullNodeAlert, \
-    ErrorWhenReadingDataFromNode, CannotAccessGitHubPageAlert, \
-    TerminatedDueToExceptionAlert, ProblemWithTelegramBot, \
-    ProblemWhenCheckingIfCallsAreSnoozedAlert, ProblemWhenDialingNumberAlert, \
-    CannotAccessNodeAlert, PeersDecreasedAlert
+from src.alerting.alerts.alerts import *
 
 
 class TestAlerts(unittest.TestCase):
     def test_cannot_access_node_alert(self):
         node = 'Node Name'
+        went_down_at = datetime.max
+        downtime = '1 hours, 2 minutes, 3 seconds'
 
-        self.assertEqual('I cannot access {}.'.format(node),
-                         str(CannotAccessNodeAlert(node)))
+        self.assertEqual(
+            'I cannot access {}. Node became inaccessible at {} '
+            'and has been inaccessible for (at most) {}.'.format(
+                node, went_down_at, downtime),
+            str(CannotAccessNodeAlert(node, went_down_at, downtime)))
 
     def test_still_cannot_access_node_alert(self):
         node = 'Node Name'

@@ -23,8 +23,12 @@ class ExperiencingDelaysAlert(Alert):
 
 class CannotAccessNodeAlert(Alert):
 
-    def __init__(self, node: str) -> None:
-        super().__init__('I cannot access {}.'.format(node))
+    def __init__(self, node: str, went_down_at: datetime,
+                 downtime: str) -> None:
+        super().__init__(
+            'I cannot access {}. Node became inaccessible at {} '
+            'and has been inaccessible for (at most) {}.'.format(
+                node, went_down_at, downtime))
 
 
 class StillCannotAccessNodeAlert(Alert):
