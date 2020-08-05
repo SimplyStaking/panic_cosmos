@@ -14,7 +14,7 @@ def run() -> None:
     cp_repos.read('config/user_config_repos.ini')
 
     # Start setup
-    print('Welcome to the P.A.N.I.C. alerter!')
+    print('Welcome to the PANIC alerter!')
     try:
         setup_user_config_main.setup_all(cp_main)
         with open('config/user_config_main.ini', 'w') as f:

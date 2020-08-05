@@ -85,7 +85,7 @@ class TelegramCommands(Commands):
             return
 
         # Send welcome message
-        update.message.reply_text("Welcome to the P.A.N.I.C. alerter bot!\n"
+        update.message.reply_text("Welcome to the PANIC alerter bot!\n"
                                   "Type /help for more information.")
 
     def _snooze_callback(self, update: Update, context: CallbackContext):

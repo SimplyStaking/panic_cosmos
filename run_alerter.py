@@ -285,7 +285,7 @@ if __name__ == '__main__':
         REDIS = None
 
     # Alerters initialisation
-    alerter_name = 'P.A.N.I.C.'
+    alerter_name = 'PANIC'
     full_channel_set = get_full_channel_set(
         alerter_name, logger_general, REDIS, log_file_alerts)
     log_and_print('Enabled alerting channels (general): {}'.format(

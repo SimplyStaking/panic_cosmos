@@ -43,9 +43,9 @@ def setup_nodes(cp: ConfigParser) -> None:
           'of nodes to be included in the monitoring will now be set up. This '
           'includes validators, sentries, and any full nodes that can be used '
           'as a data source to monitor from the network\'s perspective. You '
-          'may include nodes from multiple networks in any order; P.A.N.I.C. '
-          'will figure out which network they belong to when you run it. Node '
-          'names must be unique!')
+          'may include nodes from multiple networks in any order; PANIC will '
+          'figure out which network they belong to when you run it. Node names '
+          'must be unique!')
 
     # Check if list already set up
     if len(cp.sections()) > 0 and \

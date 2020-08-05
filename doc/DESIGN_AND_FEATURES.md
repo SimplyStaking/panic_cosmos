@@ -13,13 +13,13 @@ This page will present the inner workings of the alerter as well as the features
 
 ## Design
 
-The below diagram gives an idea of the various components at play when P.A.N.I.C. is running, and how they interact with each other and the node operator:
+The below diagram gives an idea of the various components at play when PANIC is running, and how they interact with each other and the node operator:
 
 <img src="./IMG_DESIGN_5x.png" alt="design" width="600"/>
 
 ## Alerting Channels
 
-P.A.N.I.C. currently supports five alerting channels. By default, only console and logging alerts are enabled, allowing the node operator to run the alerter without having to set up extra alerting channels. This is not enough for a more serious and longer-term alerting setup, for which the node operator should set up the remaining alerting channels.
+PANIC currently supports five alerting channels. By default, only console and logging alerts are enabled, allowing the node operator to run the alerter without having to set up extra alerting channels. This is not enough for a more serious and longer-term alerting setup, for which the node operator should set up the remaining alerting channels.
 
 - **Console**: alerts printed to standard output (`stdout`).
 - **Logging**: alerts logged to an alerts log (`logs/alerts/alerts.log`).
@@ -31,7 +31,7 @@ Instructions on how to set up the alerting channels can be found in the [install
 
 ## Alert Types
 
-Different events vary in severity. We cannot treat an alert for a new version of the Cosmos SDK as being on the same level as an alert for validator downtime. P.A.N.I.C. makes use of four alert types:
+Different events vary in severity. We cannot treat an alert for a new version of the Cosmos SDK as being on the same level as an alert for validator downtime. PANIC makes use of four alert types:
 
 - **MAJOR**: the most severe alert and the only type of alert that uses the Twilio phone calling. Example: validator misses 10 blocks in a row.
 - **MINOR**: a less severe alert but which still requires attention as it may be a warning of an incoming major alert. Example: validator misses multiple blocks.
@@ -40,7 +40,7 @@ Different events vary in severity. We cannot treat an alert for a new version of
 
 ## Monitor Types
 
-An aspect of the design of P.A.N.I.C. that is less visible to the user is that there are multiple monitor types. Once the alerter is started, it detects the number of nodes and which network(s) they belong to and automatically launches the necessary number of monitors of each type.
+An aspect of the design of PANIC that is less visible to the user is that there are multiple monitor types. Once the alerter is started, it detects the number of nodes and which network(s) they belong to and automatically launches the necessary number of monitors of each type.
 
 - **Node monitor** (one per node): deals with node-specific details such as voting power and number of peers.
 - **Network monitor** (one per network): deals with general details from each committed block in a network, using any non-validator node available as a data source, mainly to find out if the validator/s are missing blocks.
@@ -102,7 +102,7 @@ In each monitoring round, the GitHub monitor:
 
 ## Periodic Alive Reminder
 
-The periodic alive reminder is a way for P.A.N.I.C to inform the operator that it is still running. This can be useful to the operator when no alerts have been sent for a long time, therefore it does not leave the operator wondering whether P.A.N.I.C is still running or not.
+The periodic alive reminder is a way for PANIC to inform the operator that it is still running. This can be useful to the operator when no alerts have been sent for a long time, therefore it does not leave the operator wondering whether PANIC is still running or not.
 
 The following are some important points about the periodic alive reminder:
 
@@ -111,7 +111,7 @@ The following are some important points about the periodic alive reminder:
 
 ## Telegram Commands
 
-Telegram bots in P.A.N.I.C. serve two purposes. As mentioned above, they are used to send alerts. However they can also accept commands that allow you to check the status of the alerter (and its running monitors), snooze or unsnooze calls, mute or unmute periodic alive reminders, and conveniently get Cosmos explorer links to validator lists, blocks, and transactions.
+Telegram bots in PANIC serve two purposes. As mentioned above, they are used to send alerts. However they can also accept commands that allow you to check the status of the alerter (and its running monitors), snooze or unsnooze calls, mute or unmute periodic alive reminders, and conveniently get Cosmos explorer links to validator lists, blocks, and transactions.
 
 <img src="./IMG_TELEGRAM_COMMANDS.png" alt="telegram_commands"/>
 
@@ -249,7 +249,7 @@ The only two alerts raised by the GitHub alerter are an info alert when a new re
 
 ### Periodic Alive Reminder
 
-If the periodic alive reminder is enabled from the config file, and P.A.N.I.C is running smoothly, the operator is informed every time period that P.A.N.I.C is still running via an info alert.
+If the periodic alive reminder is enabled from the config file, and PANIC is running smoothly, the operator is informed every time period that PANIC is still running via an info alert.
 
 The periodic alive reminder always uses the console and logger to raise this alert, however, the operator can also receive this alert via Telegram, Email or both, by modifying the config file as described [here](./INSTALL_AND_RUN.md#setting-up-panic).
 

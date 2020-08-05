@@ -1,6 +1,6 @@
 # Redis Server
 
-Before installing Redis, we recommend that you read through the [security model of Redis](https://redis.io/topics/security), which is meant to be run within a strictly trusted environment. The below installation, and P.A.N.I.C. in general, takes this security model into account and includes the suggested security boosts.
+Before installing Redis, we recommend that you read through the [security model of Redis](https://redis.io/topics/security), which is meant to be run within a strictly trusted environment. The below installation, and PANIC in general, takes this security model into account and includes the suggested security boosts.
 
 1. To install **Redis server** on your system:
     - On Linux, run:
@@ -16,7 +16,7 @@ Before installing Redis, we recommend that you read through the [security model 
     2. In the `GENERAL` section, add (or uncomment) the line `bind 127.0.0.1` to bind Redis only to localhost. This assumes that Redis is installed on the same system that will run the alerter.
     3. In the `SECURITY` section, add (or uncomment) the line `requirepass <PASS>`, where `<PASS>` is a complex password of your choosing. The alerter will ask for this password during setup.
     4. In the `SECURITY` section, you can also choose to disable some commands to prevent some actions from taking place. For each command, add a line: `rename-command <COMMAND> ""`.
-        -  The following commands are *not* used by P.A.N.I.C. and can thus be disabled: `FLUSHALL`, `PEXPIRE`, `CONFIG`, `SHUTDOWN`, `BGREWRITEAOF`, `BGSAVE`, `SAVE`, `SPOP`, `SREM`, `RENAME` and `DEBUG`.
+        -  The following commands are *not* used by PANIC and can thus be disabled: `FLUSHALL`, `PEXPIRE`, `CONFIG`, `SHUTDOWN`, `BGREWRITEAOF`, `BGSAVE`, `SAVE`, `SPOP`, `SREM`, `RENAME` and `DEBUG`.
     5. On Linux, restart Redis to apply changes: `sudo service redis-server restart`
 
 3. To **run Redis**:
