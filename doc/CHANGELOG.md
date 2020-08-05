@@ -1,6 +1,25 @@
 # Change Log
 
-## Unreleased
+## 1.1.2
+
+Released on August 5, 2020.
+
+### Update Instructions
+If still not updated to `v1.1.1`, check out the [`v1.1.1` update instructions](https://github.com/SimplyVC/panic_cosmos/releases/tag/v1.1.1).
+
+For `v1.1.1` to `v1.1.2`:
+```shell script
+git fetch            # Fetch these changes
+git checkout v1.1.2  # Switch to this version
+pipenv sync          # Update dependencies
+```
+
+PANIC can now be started up. If the alerter was running as a Linux service, the service should now be restarted:
+```shell script
+sudo systemctl restart panic_alerter
+```
+
+User config files from `v1.1.1` are compatible with `v1.1.2`.
 
 ### Bug Fixes
 * (genesis) Network monitor no longer crashes if the chain of the nodes being monitored has not started
@@ -29,7 +48,7 @@ git checkout v1.1.1  # Switch to this version
 pipenv sync          # Update dependencies
 ```
 
-P.A.N.I.C. can now be started up. If the alerter was running as a Linux service, the service should now be restarted:
+PANIC can now be started up. If the alerter was running as a Linux service, the service should now be restarted:
 ```shell script
 sudo systemctl restart panic_alerter
 ```
@@ -61,7 +80,7 @@ Released on December 09, 2019.
 
 ### Update Instructions
 
-To update an instance of P.A.N.I.C. to this version:
+To update an instance of PANIC to this version:
 ```shell script
 git fetch            # Fetch these changes
 git checkout v1.1.0  # Switch to this version
@@ -72,7 +91,7 @@ pipenv run python run_util_update_to_v1.1.0.py
 
 The `run_util_update_to_v1.1.0.py` script updates `user_config_main.ini` so that it becomes compatible with the v1.1.0 `user_config_main.ini` file.
 
-P.A.N.I.C. can now be started up. If the alerter was running as a Linux service, the service should now be restarted:
+PANIC can now be started up. If the alerter was running as a Linux service, the service should now be restarted:
 
 ```shell script
 sudo systemctl restart panic_alerter

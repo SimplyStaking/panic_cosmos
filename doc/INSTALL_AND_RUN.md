@@ -1,9 +1,9 @@
-# Installing and Running P.A.N.I.C.
+# Installing and Running PANIC
 
-This page will guide you through the steps required to get P.A.N.I.C. up and alerting, including the installation of preliminaries, setting up of 
-P.A.N.I.C. itself, additional (optional) configuration, and running the alerter (directly or as a Linux service). Some steps are optional.
+This page will guide you through the steps required to get PANIC up and alerting, including the installation of preliminaries, setting up of 
+PANIC itself, additional (optional) configuration, and running the alerter (directly or as a Linux service). Some steps are optional.
 
-We recommend that the alerter is installed on a Linux system, given the simpler installation and running process. However, instructions on how to install P.A.N.I.C. on a Windows system are also provided. On a Debian-based Linux system, run the following before starting the installation process:
+We recommend that the alerter is installed on a Linux system, given the simpler installation and running process. However, instructions on how to install PANIC on a Windows system are also provided. On a Debian-based Linux system, run the following before starting the installation process:
 ```bash
 sudo apt-get update
 sudo apt-get upgrade
@@ -11,7 +11,7 @@ sudo apt-get upgrade
 
 ## Requirements
 
-The only major requirement to run P.A.N.I.C. is Python 3. However, to unlock the full potential of the alerter, we recommend that you install or set up as many of the below requirements as possible:
+The only major requirement to run PANIC is Python 3. However, to unlock the full potential of the alerter, we recommend that you install or set up as many of the below requirements as possible:
 - Python v3.5.2+ with pip package manager and pipenv packaging tool.
 - **Optional**: Telegram account and bots, for Telegram alerts and commands.
 - **Optional**: Twilio account, for highly effective phone call alerts.
@@ -38,9 +38,9 @@ The only major requirement to run P.A.N.I.C. is Python 3. However, to unlock the
 - **Twilio**: [Click here](INSTALL_TWILIO.md) if you want to set up a Twilio account.
 - **Redis server**: [Click here](INSTALL_REDIS.md) if you want to set up a Redis server.
 
-## Setting up P.A.N.I.C.
+## Setting up PANIC
 
-P.A.N.I.C. requires its own setup process, involving three main parts, each of which generates its own respective config file:
+PANIC requires its own setup process, involving three main parts, each of which generates its own respective config file:
 
 - Linking up any of the optional features that you set up (`config/user_config_main.ini`)
 - Providing a list of nodes that you wish to monitor (`config/user_config_nodes.ini`)
@@ -74,9 +74,9 @@ This file consists of values such as:
 - **Alert frequency and severity modifiers (by time intervals and boundaries)**
 - Links to use for the `/validators`, `/block`, and `/tx` Telegram commands.
 
-## Running P.A.N.I.C.
+## Running PANIC
 
-After all of the setting-up, you will be glad to find out that running the alerter is a breeze. To start up P.A.N.I.C. simply run the following commands:
+After all of the setting-up, you will be glad to find out that running the alerter is a breeze. To start up PANIC simply run the following commands:
 ```bash
 pipenv sync
 pipenv run python run_alerter.py
@@ -87,7 +87,7 @@ Assuming that the setup process was followed till the end, the above commands wi
 
 It is recommended to check the console output or general log to make sure that all monitors started-up. Alternatively, you can run the `/status` command on Telegram if you set up both Telegram and Redis.
 
-## Running P.A.N.I.C. as a Linux Service
+## Running PANIC as a Linux Service
 
 Running the alerter as a service means that it start up automatically on boot and restarts automatically if it runs into some issue and stops running. To do so, we recommend the following steps:
 ```bash
@@ -117,7 +117,7 @@ It should contain the following, replacing `<USER>` with the created user's name
 *Make sure that the `<ALERTER_DIR>` is the full path, for example: `/root/panic_cosmos/`*
 ```bash
 [Unit]
-Description=P.A.N.I.C.
+Description=PANIC
 After=network.target
 StartLimitIntervalSec=0
 

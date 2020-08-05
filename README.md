@@ -1,20 +1,20 @@
-# P.A.N.I.C. by Simply VC
+# PANIC for Cosmos
 
-<img src="./doc/IMG_PANIC.png" alt="design" width="600"/>
+<img src="./doc/IMG_PANIC.png" alt="PANIC Logo"/>
 
-P.A.N.I.C. (Python Alerter for Nodes In Cosmos) by [Simply VC](https://simply-vc.com.mt/) is a powerful and lightweight open source monitoring and alerting solution for [Cosmos](https://cosmos.network/) nodes. It is compatible with any chain built using the Cosmos SDK. The tool was built with user friendliness in mind, without excluding cool and useful features like phone calls for major alerts and Telegram commands for increased control over your alerter.
+PANIC for [Cosmos](https://cosmos.network/) is a lightweight yet powerful open source monitoring and alerting solution for Cosmos nodes by [Simply VC](https://simply-vc.com.mt/). It is compatible with any chain built using the Cosmos SDK. The tool was built with user friendliness in mind, without excluding cool and useful features like phone calls for major alerts and Telegram commands for increased control over your alerter.
 
-The alerter's focus on a modular design means that it is beginner friendly but also developer friendly. It allows the user to decide which components of the alerter to set up while making it easy for developers to add new features. P.A.N.I.C. also offers two levels of configurability, _user_ and _internal_, allowing more experienced users to fine-tune the alerter to their preference.
+The alerter's focus on a modular design means that it is beginner friendly but also developer friendly. It allows the user to decide which components of the alerter to set up while making it easy for developers to add new features. PANIC also offers two levels of configurability, _user_ and _internal_, allowing more experienced users to fine-tune the alerter to their preference.
 
-We are sure that P.A.N.I.C. will be beneficial for node operators in the Cosmos community and we look forward to feedback. Feel free to read on if you are interested in the design of the alerter, if you wish to try it out, or if you would like to support and contribute to this open source project, or just check out upcoming features.
+We are sure that PANIC will be beneficial for node operators in the Cosmos community and we look forward to feedback. Feel free to read on if you are interested in the design of the alerter, if you wish to try it out, or if you would like to support and contribute to this open source project, or just check out upcoming features.
 
 ### Design and Features
 
-[Click here](doc/DESIGN_AND_FEATURES.md) if you want to dive into the design and feature set of P.A.N.I.C.
+[Click here](doc/DESIGN_AND_FEATURES.md) if you want to dive into the design and feature set of PANIC
 
 ### Ready, Set, Alert!
 
-[Click here](doc/INSTALL_AND_RUN.md) if you are ready to try out P.A.N.I.C. on your Cosmos nodes!
+[Click here](doc/INSTALL_AND_RUN.md) if you are ready to try out PANIC on your Cosmos nodes!
 
 ### Support and Contribution
 
@@ -32,4 +32,4 @@ If you wish to read more about monitoring and alerting on Cosmos, check out [our
 
 ---
 
-Official P.A.N.I.C. by Simply VC image adapted from [slidescarnival.com](https://www.slidescarnival.com/)
+Official PANIC by Simply VC image adapted from [slidescarnival.com](https://www.slidescarnival.com/)

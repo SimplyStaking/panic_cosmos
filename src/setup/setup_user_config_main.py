@@ -34,8 +34,8 @@ def setup_general(cp: ConfigParser) -> None:
     print('The first step is to set a unique identifier for the alerter. This '
           'can be any word that uniquely describes the setup being monitored. '
           'Uniqueness is very important if you are running multiple instances '
-          'of the P.A.N.I.C. alerter, to avoid any possible Redis clashes. The '
-          'name will only be used internally and will not show up in alerts.')
+          'of the PANIC alerter, to avoid any possible Redis clashes. The name '
+          'will only be used internally and will not show up in alerts.')
 
     if is_already_set_up(cp, 'general'):
         identifier = cp['general']['unique_alerter_identifier']
@@ -254,7 +254,7 @@ def setup_telegram_commands(cp: ConfigParser) -> None:
                           'wish to clear the current config? (Y/n)\n'):
         return
 
-    print('NOTE: If you are running more than one instance of the P.A.N.I.C. '
+    print('NOTE: If you are running more than one instance of the PANIC '
           'alerter, do not use the same telegram bot as the other instance/s.')
 
     reset_section('telegram_commands', cp)
