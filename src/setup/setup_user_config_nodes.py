@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 from typing import Optional, List
 
-from src.monitoring.monitor_utils.get_json import get_json
+from src.monitoring.monitor_utils.get_json import get_cosmos_json_raw
 from src.utils.config_parsers.user import NodeConfig
 from src.utils.logging import DUMMY_LOGGER
 from src.utils.user_input import yn_prompt
@@ -22,7 +22,7 @@ def get_node(nodes_so_far: List[NodeConfig]) -> Optional[NodeConfig]:
         rpc_url = input('Node\'s RPC url (typically http://NODE_IP:26657):\n')
         print('Trying to connect to endpoint {}/health'.format(rpc_url))
         try:
-            get_json(rpc_url + '/health', DUMMY_LOGGER)
+            get_cosmos_json_raw(rpc_url + '/health', DUMMY_LOGGER)
             print('Success.')
             break
         except Exception:
