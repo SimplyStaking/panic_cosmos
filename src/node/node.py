@@ -288,12 +288,13 @@ class Node:
                     self.name, self.voting_power, new_voting_power))
             else:  # Any change
                 diff = new_voting_power - self.voting_power
-                if diff > 0:
-                    channels.alert_info(VotingPowerIncreasedByAlert(
-                        self.name, self.voting_power, new_voting_power))
-                else:
-                    channels.alert_info(VotingPowerDecreasedByAlert(
-                        self.name, self.voting_power, new_voting_power))
+                if abs(diff) > InternalConf.change_in_voting_power_threshold:
+                    if diff > 0:
+                        channels.alert_info(VotingPowerIncreasedByAlert(
+                            self.name, self.voting_power, new_voting_power))
+                    else:
+                        channels.alert_info(VotingPowerDecreasedByAlert(
+                            self.name, self.voting_power, new_voting_power))
 
         # Update voting power
         self._voting_power = new_voting_power

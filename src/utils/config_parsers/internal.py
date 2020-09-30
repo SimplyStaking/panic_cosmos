@@ -101,6 +101,8 @@ class InternalConfig(ConfigParser):
             section['missed_blocks_danger_boundary'])
         self.github_error_interval_seconds = timedelta(seconds=int(
             section['github_error_interval_seconds']))
+        self.change_in_voting_power_threshold = int(
+            section['change_in_voting_power_threshold'])
 
         # [links]
         section = cp['links']
