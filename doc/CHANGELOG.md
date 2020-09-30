@@ -1,5 +1,10 @@
 # Change Log
 
+## Unreleased
+
+### Improvements
+* (errors) Improved handling of IncompleteRead errors that were showing up on the alert channels.
+
 ## 1.1.2
 
 Released on August 5, 2020.
