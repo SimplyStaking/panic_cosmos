@@ -37,7 +37,7 @@ def start_node_monitor(node_monitor: NodeMonitor, monitor_period: int,
                          'Alerter will continue running normally.'
                          ''.format(node_monitor.node, incomplete_read))
         except Exception as e:
-            logger.error(e)
+            logger.exception(e)
             raise e
 
         # Save all state
@@ -71,7 +71,7 @@ def start_network_monitor(network_monitor: NetworkMonitor, monitor_period: int,
             logger.error('Error when reading data from %s: %s',
                          network_monitor.last_full_node_used, incomplete_read)
         except Exception as e:
-            logger.error(e)
+            logger.exception(e)
             raise e
 
         # Save all state
@@ -113,7 +113,7 @@ def start_github_monitor(github_monitor: GitHubMonitor, monitor_period: int,
         except JSONDecodeError as json_error:
             logger.error(json_error)  # Ignore such errors
         except Exception as e:
-            logger.error(e)
+            logger.exception(e)
             raise e
 
         # Sleep
