@@ -16,24 +16,30 @@ class CounterChannel(Channel):
         self.minor_count = 0
         self.major_count = 0
         self.error_count = 0
+        self.latest_alert = None
 
     def reset(self) -> None:
         self.info_count = 0
         self.minor_count = 0
         self.major_count = 0
         self.error_count = 0
+        self.latest_alert = None
 
     def alert_info(self, alert: Alert) -> None:
         self.info_count += 1
+        self.latest_alert = alert
 
     def alert_minor(self, alert: Alert) -> None:
         self.minor_count += 1
+        self.latest_alert = alert
 
     def alert_major(self, alert: Alert) -> None:
         self.major_count += 1
+        self.latest_alert = alert
 
     def alert_error(self, alert: Alert) -> None:
         self.error_count += 1
+        self.latest_alert = alert
 
     def no_alerts(self):
         return self.info_count == 0 and self.minor_count == 0 and \
