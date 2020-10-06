@@ -795,10 +795,10 @@ class TestNodeWithRedis(unittest.TestCase):
         password = TestUserConf.redis_password
         redis = RedisApi(logger, db, host, port, password)
 
-        # try:
-        #     redis.ping_unsafe()
-        # except RedisConnectionError:
-        #     raise Exception('Redis is not online.')
+        try:
+            redis.ping_unsafe()
+        except RedisConnectionError:
+            raise Exception('Redis is not online.')
 
     def setUp(self) -> None:
         self.node_name = 'testnode'
