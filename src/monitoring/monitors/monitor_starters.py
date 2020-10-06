@@ -1,11 +1,11 @@
-import http.client
 import logging
 import time
+from http.client import IncompleteRead
 from json import JSONDecodeError
 
-import urllib3.exceptions
 from requests.exceptions import ConnectionError as ReqConnectionError, \
-    ReadTimeout
+    ReadTimeout, ChunkedEncodingError
+from urllib3.exceptions import ProtocolError
 
 from src.alerting.alerts.alerts import CouldNotFindLiveFullNodeAlert, \
     ErrorWhenReadingDataFromNode, CannotAccessGitHubPageAlert
@@ -31,13 +31,12 @@ def start_node_monitor(node_monitor: NodeMonitor, monitor_period: int,
             node_monitor.node.set_as_down(node_monitor.channels, logger)
         except ReadTimeout:
             node_monitor.node.set_as_down(node_monitor.channels, logger)
-        except (urllib3.exceptions.IncompleteRead,
-                http.client.IncompleteRead) as incomplete_read:
-            logger.error('Error when reading data from {}: {}. '
-                         'Alerter will continue running normally.'
-                         ''.format(node_monitor.node, incomplete_read))
+        except (IncompleteRead, ChunkedEncodingError, ProtocolError) as e:
+            logger.error('Error when reading data from %s: %s. '
+                         'Alerter will continue running normally.',
+                         node_monitor.node, e)
         except Exception as e:
-            logger.error(e)
+            logger.exception(e)
             raise e
 
         # Save all state
@@ -64,14 +63,13 @@ def start_network_monitor(network_monitor: NetworkMonitor, monitor_period: int,
         except (ReqConnectionError, ReadTimeout):
             network_monitor.last_full_node_used.set_as_down(
                 network_monitor.channels, logger)
-        except (urllib3.exceptions.IncompleteRead,
-                http.client.IncompleteRead) as incomplete_read:
+        except (IncompleteRead, ChunkedEncodingError, ProtocolError) as e:
             network_monitor.channels.alert_error(ErrorWhenReadingDataFromNode(
                 network_monitor.last_full_node_used))
             logger.error('Error when reading data from %s: %s',
-                         network_monitor.last_full_node_used, incomplete_read)
+                         network_monitor.last_full_node_used, e)
         except Exception as e:
-            logger.error(e)
+            logger.exception(e)
             raise e
 
         # Save all state
@@ -113,7 +111,7 @@ def start_github_monitor(github_monitor: GitHubMonitor, monitor_period: int,
         except JSONDecodeError as json_error:
             logger.error(json_error)  # Ignore such errors
         except Exception as e:
-            logger.error(e)
+            logger.exception(e)
             raise e
 
         # Sleep

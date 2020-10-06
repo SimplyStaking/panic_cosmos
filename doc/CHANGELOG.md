@@ -1,5 +1,11 @@
 # Change Log
 
+## Unreleased
+
+### Improvements
+* (alerts) Added a threshold for change in voting power to reduce alert spam in the case of tiny changes. The default is **1** and this can be customised by modifying the `change_in_voting_power_threshold` field in the `internal_config.ini`.
+* (errors) Improved handling of IncompleteRead errors that were showing up on the alert channels.
+
 ## 1.1.2
 
 Released on August 5, 2020.

@@ -58,6 +58,9 @@ class Node:
             internal_conf.max_missed_blocks_in_time_interval,
             internal_conf.max_missed_blocks_time_interval)
 
+        self._change_in_voting_power_threshold = \
+            internal_conf.change_in_voting_power_threshold
+
     def __str__(self) -> str:
         return self.name
 
@@ -288,12 +291,13 @@ class Node:
                     self.name, self.voting_power, new_voting_power))
             else:  # Any change
                 diff = new_voting_power - self.voting_power
-                if diff > 0:
-                    channels.alert_info(VotingPowerIncreasedByAlert(
-                        self.name, self.voting_power, new_voting_power))
-                else:
-                    channels.alert_info(VotingPowerDecreasedByAlert(
-                        self.name, self.voting_power, new_voting_power))
+                if abs(diff) > self._change_in_voting_power_threshold:
+                    if diff > 0:
+                        channels.alert_info(VotingPowerIncreasedByAlert(
+                            self.name, self.voting_power, new_voting_power))
+                    else:
+                        channels.alert_info(VotingPowerDecreasedByAlert(
+                            self.name, self.voting_power, new_voting_power))
 
         # Update voting power
         self._voting_power = new_voting_power
