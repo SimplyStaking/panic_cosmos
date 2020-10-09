@@ -127,15 +127,19 @@ class InternalConfig(ConfigParser):
         self.github_releases_template = section['github_releases_template']
 
     # Safe boundary must be greater than danger boundary at all times for
-    # correct execution
+    # correct execution. The >= -2 allows the following config to be valid:
+    #  - safe = -1, danger = -2
+    # This disables peer alerts since in any case the following will be true:
+    #  - peers > safe > danger
     def _peer_safe_and_danger_boundaries_are_valid(self) -> bool:
         return self.validator_peer_safe_boundary > \
-               self.validator_peer_danger_boundary > 0
+               self.validator_peer_danger_boundary >= -2
 
     def _check_if_peer_safe_and_danger_boundaries_are_valid(self):
         while not self._peer_safe_and_danger_boundaries_are_valid():
             print("validator_peer_safe_boundary must be STRICTLY GREATER than "
-                  "validator_peer_danger_boundary for correct execution. "
+                  "validator_peer_danger_boundary, which in turn must be "
+                  "greater or equal to -2 for correct execution (S > D >= -2)."
                   "\nPlease do the necessary modifications in the "
                   "config/internal_config.ini file and restart the alerter.")
             sys.exit(-1)
