@@ -2,9 +2,33 @@
 
 ## Unreleased
 
-### Improvements
+## 1.2.0
+
+Released on May 17, 2020.
+
 * (alerts) Added a threshold for change in voting power to reduce alert spam in the case of tiny changes. The default is **1** and this can be customised by modifying the `change_in_voting_power_threshold` field in the `internal_config.ini`.
 * (errors) Improved handling of IncompleteRead errors that were showing up on the alert channels.
+* (alerter) 
+    * Updated dependencies.
+    * Fixed issue with connections being opened but not closed when requesting data from the nodes.
+
+### Update Instructions
+
+If still not updated to `v1.1.1`, check out the [`v1.1.1` update instructions](https://github.com/SimplyVC/panic_cosmos/releases/tag/v1.1.1).
+
+For `v1.1.2` to `v1.2.0`:
+```shell script
+git fetch            # Fetch these changes
+git checkout v1.2.0  # Switch to this version
+pipenv sync          # Update dependencies
+```
+
+PANIC can now be started up. If the alerter was running as a Linux service, the service should now be restarted:
+```shell script
+sudo systemctl restart panic_alerter
+```
+
+User config files from `v1.1.2` are compatible with `v1.2.0`.
 
 ## 1.1.2
 
