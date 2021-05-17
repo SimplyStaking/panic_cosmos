@@ -20,6 +20,10 @@ class TestGetJson(unittest.TestCase):
         def __init__(self) -> None:
             self.content = self.CONTENT_BYTES
 
+        def close(self) -> None:
+            # Needs to be declared since get_json calls Response.close()
+            pass
+
     @patch(GET_FUNCTION, return_value=DummyGetReturn())
     def test_get_json_accesses_content_and_parses_bytes_to_dict(self, _):
         self.assertEqual(TestGetJson.DummyGetReturn.CONTENT_DICT,

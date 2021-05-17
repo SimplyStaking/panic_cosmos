@@ -7,6 +7,7 @@ import requests
 
 def get_json(endpoint: str, logger: logging.Logger) -> Dict:
     get_ret = requests.get(endpoint, timeout=10)
+    get_ret.close()
     logger.debug('get_json: get_ret: %s', get_ret)
     return json.loads(get_ret.content.decode('UTF-8'))
 
