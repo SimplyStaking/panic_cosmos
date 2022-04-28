@@ -1,6 +1,6 @@
 # PANIC for Cosmos
 
-This Repo has been archived. Cosmos node monitoring and alerting has been integrated into [this product](https://github.com/SimplyVC/panic), which we now actively maintain.
+> :warning: **This Repo has been archived. Cosmos node monitoring and alerting has been integrated into [this product](https://github.com/SimplyVC/panic), which we now actively maintain.**
 
 <img src="./doc/IMG_PANIC.png" alt="PANIC Logo"/>
 
