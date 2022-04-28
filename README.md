@@ -1,5 +1,7 @@
 # PANIC for Cosmos
 
+This Repo has been archived. Cosmos node monitoring and alerting has been integrated into [this product](https://github.com/SimplyVC/panic), which we now actively maintain.
+
 <img src="./doc/IMG_PANIC.png" alt="PANIC Logo"/>
 
 PANIC for [Cosmos](https://cosmos.network/) is a lightweight yet powerful open source monitoring and alerting solution for Cosmos nodes by [Simply VC](https://simply-vc.com.mt/). It is compatible with any chain built using the Cosmos SDK. The tool was built with user friendliness in mind, without excluding cool and useful features like phone calls for major alerts and Telegram commands for increased control over your alerter.
