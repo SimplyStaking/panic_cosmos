@@ -17,6 +17,15 @@ The only major requirement to run PANIC is Python 3. However, to unlock the full
 - **Optional**: Twilio account, for highly effective phone call alerts.
 - **Optional**: Redis server, to keep a backup of the alerter state and to have some control over the alerter, such as to snooze phone call alerts using Telegram commands.
 
+### Clone Repository
+
+In order to run setup, you must first clone the repository.
+```
+cd ~
+git clone https://github.com/SimplyVC/panic_cosmos.git
+cd panic_cosmos
+```
+
 ### Python (with pip and pipenv)
 
 1. To install **Python v3.5.2 or greater**, you can [follow this guide](https://realpython.com/installing-python/).
