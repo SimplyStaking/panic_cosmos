@@ -197,12 +197,16 @@ Voting power change alerts are mostly info alerts; voting power increase is alwa
 ### Number of Peers
 
 Alerts for changes in the number of peers range from info to major.
+
 #### For Validator Nodes
 - Any decrease to `N` peers inside a configurable danger boundary `D1` is a major alert (i.e. `N <= D1`). 
 - Any decrease to `N` peers inside a configurable safe boundary `S1` is a minor alert (i.e. `D1 < N <= s1`).
 - Any decrease to `N` peers outside a configurable safe boundary `S1` raises no alerts (i.e. `N > S1`).
 - Any increase to `N` peers inside a configurable safe/danger boundary `S1`/`D1` raises an info alert (i.e. `N <= S1/D1`)
 - Any increase to `N` peers outside a configurable safe boundary `S1` raises no alerts (i.e. `N > S1`).
+
+In general, `S1 > D1 >= -2` is enforced, where the `-2` lower bound allows the configuration `S1=-1, D1=-2` to be valid. This `-1,-2` configuration essentially disables peer change alerts since in any case `N > S1 > D1`
+
 #### For Non-Validator Nodes 
 - Any decrease to `N` peers inside a configurable danger boundary `D2` raises a minor alert (i.e. `N <= D2`). Otherwise, any other decreases raises no alert.
 - Any increase to `N` peers inside a configurable danger boundary `D2` raises an info alert (i.e. `N <= D2`). Otherwise, any other increase raises no alert.
