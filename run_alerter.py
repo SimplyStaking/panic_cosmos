@@ -39,7 +39,8 @@ def node_from_node_config(node_config: NodeConfig):
         node_status = get_cosmos_json(node_config.node_rpc_url + '/status',
                                       logger_general)
         log_and_print('Success.')
-    except Exception:
+    except Exception as e:
+        logger_general.exception(e)  # Log exception stacktrace
         raise InitialisationException('Failed to connect to {} at {}'.format(
             node_config.node_name, node_config.node_rpc_url))
 
